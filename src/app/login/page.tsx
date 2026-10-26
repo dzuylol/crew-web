@@ -33,9 +33,10 @@ function LoginForm() {
 
         {/* Error message */}
         {error && (
-          <p className="rounded-lg bg-red-50 px-4 py-3 text-center text-sm text-red-600">
-            Sign-in failed. Please try again.
-          </p>
+          <div className="rounded-lg bg-red-50 px-4 py-3 text-center text-sm text-red-600 space-y-1">
+            <p className="font-medium">Sign-in failed.</p>
+            <p className="text-xs text-red-400">Make sure you&apos;re using a personal Gmail account, not your school email.</p>
+          </div>
         )}
 
         {/* Sign-in button */}
@@ -48,7 +49,7 @@ function LoginForm() {
         </button>
 
         <p className="text-center text-xs text-gray-400">
-          Use your school Google account
+          Use your personal Google account
         </p>
       </div>
     </main>
