@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import type { AppUser } from "@/types";
+import { stableColor } from "@/types";
 
 const HOME_COLOR = "#7A1F2E";
 
@@ -65,6 +66,7 @@ export default function ProfilePage() {
 
   const displayName = user ? `${user.first_name} ${user.last_name}`.trim() : "";
   const initial = displayName[0]?.toUpperCase() ?? "?";
+  const avatarColor = user ? stableColor(user.id) : HOME_COLOR;
 
   return (
     <div className="min-h-dvh" style={{ background: "var(--background)" }}>
@@ -85,7 +87,7 @@ export default function ProfilePage() {
         <div className="card-shadow rounded-[20px] p-5 text-center" style={{ background: "var(--card)" }}>
           <div
             className="mx-auto flex h-20 w-20 items-center justify-center rounded-full text-3xl font-bold text-white"
-            style={{ backgroundColor: HOME_COLOR }}
+            style={{ backgroundColor: avatarColor }}
           >
             {initial}
           </div>

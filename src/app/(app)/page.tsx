@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import type { Club, Meeting, Announcement, AppUser } from "@/types";
-import { getRole, daysFromNow, relativeDayLabel } from "@/types";
+import { getRole, daysFromNow, relativeDayLabel, stableColor } from "@/types";
 import ClubIcon from "@/components/ui/ClubIcon";
 
 const HOME_COLOR = "#7A1F2E";
@@ -52,7 +52,11 @@ export default async function HomePage() {
       <div className="crescent-header px-5 pt-12 pb-20 text-white" style={{ backgroundColor: HOME_COLOR }}>
         <div className="flex items-start justify-between">
           <h1 className="text-2xl font-bold">Welcome back, {firstName}</h1>
-          <Link href="/profile" className="flex h-9 w-9 items-center justify-center rounded-full bg-white/20 text-sm font-bold">
+          <Link
+            href="/profile"
+            className="flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold text-white"
+            style={{ backgroundColor: stableColor(user.id) }}
+          >
             {firstName[0].toUpperCase()}
           </Link>
         </div>
