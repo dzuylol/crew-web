@@ -2,13 +2,21 @@
 
 import { useEffect } from "react";
 
-export default function ThemeProvider({ children }: { children: React.ReactNode }) {
-  useEffect(() => {
-    const saved = localStorage.getItem("theme");
-    if (saved === "dark") {
-      document.documentElement.setAttribute("data-theme", "dark");
-    }
-  }, []);
+// Inline script runs before paint to avoid flash of wrong theme
+const themeScript = `
+(function() {
+  try {
+    var t = localStorage.getItem('theme');
+    if (t === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+  } catch(e) {}
+})();
+`;
 
-  return <>{children}</>;
+export default function ThemeProvider({ children }: { children: React.ReactNode }) {
+  return (
+    <>
+      <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      {children}
+    </>
+  );
 }

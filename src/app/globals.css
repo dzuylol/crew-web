@@ -33,6 +33,20 @@
   --pill: #3A3A3C;
 }
 
+/* Apply dark mode to hardcoded Tailwind color classes */
+[data-theme="dark"] .bg-white { background-color: #2C2C2E !important; }
+[data-theme="dark"] .bg-\[\#EEEEF2\] { background-color: #1C1C1E !important; }
+[data-theme="dark"] .text-gray-900 { color: #F2F2F7 !important; }
+[data-theme="dark"] .text-gray-700 { color: #EBEBF0 !important; }
+[data-theme="dark"] .text-gray-600 { color: #C7C7CC !important; }
+[data-theme="dark"] .text-gray-500 { color: #AEAEB2 !important; }
+[data-theme="dark"] .text-gray-400 { color: #8E8E93 !important; }
+[data-theme="dark"] .divide-gray-100 { border-color: rgba(255,255,255,0.08) !important; }
+[data-theme="dark"] .border-gray-200 { border-color: rgba(255,255,255,0.1) !important; }
+[data-theme="dark"] .bg-gray-100 { background-color: #3A3A3C !important; }
+[data-theme="dark"] .bg-gray-50 { background-color: #2C2C2E !important; }
+[data-theme="dark"] .card-shadow { box-shadow: 0 6px 14px rgba(0,0,0,0.4) !important; }
+
 body {
   background: var(--background);
   color: var(--foreground);

@@ -33,7 +33,7 @@ export default function ProfilePage() {
       }
     }
     load();
-    setDark(document.documentElement.getAttribute("data-theme") === "dark");
+    setDark(localStorage.getItem("theme") === "dark");
   }, [router]);
 
   function toggleDark() {
@@ -165,6 +165,21 @@ export default function ProfilePage() {
             }
           />
         </div>
+
+        {/* Admin (super admin only) */}
+        {user?.is_super_admin && (
+          <div className="card-shadow overflow-hidden rounded-[20px]" style={{ background: "var(--card)" }}>
+            <p className="px-5 pt-4 pb-2 text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--foreground)", opacity: 0.4 }}>
+              Super Admin
+            </p>
+            <Link href="/admin" className="flex items-center justify-between px-5 py-4 text-sm font-semibold" style={{ color: "var(--foreground)" }}>
+              Manage clubs & members
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <path d="m9 18 6-6-6-6" />
+              </svg>
+            </Link>
+          </div>
+        )}
 
         {/* Account */}
         <div className="card-shadow overflow-hidden rounded-[20px]" style={{ background: "var(--card)" }}>
