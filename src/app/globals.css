@@ -1,26 +1,43 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #EEEEF2;
+  --foreground: #111111;
+  --card: #ffffff;
+  --pill: #E7E7EC;
+
+  --home: #7A1F2E;
+  --schedule: #3B6EA5;
+  --clubs: #8470C8;
+  --rose: #D1486B;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-pill: var(--pill);
+  --color-home: var(--home);
+  --color-schedule: var(--schedule);
+  --color-clubs: var(--clubs);
+  --color-rose: var(--rose);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.card-shadow {
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+}
+
+/* Crescent header — curved bottom edge */
+.crescent-header {
+  border-bottom-left-radius: 50% 60px;
+  border-bottom-right-radius: 50% 60px;
 }
