@@ -158,7 +158,7 @@ function MeetingPreviewCard({ meeting, club }: { meeting: Meeting; club: Club })
 
   return (
     <div className="card-shadow flex items-start gap-3 rounded-[16px] bg-white p-4">
-      <ClubIcon colorHex={club.color_hex} size={40} />
+      <ClubIcon colorHex={club.color_hex} iconName={club.icon_name} size={40} />
       <div className="min-w-0 flex-1">
         <div className="flex items-center justify-between gap-2">
           <span className="text-xs text-gray-400">{dateStr} · {meeting.block}</span>
@@ -178,7 +178,7 @@ function AnnouncementCard({ announcement, club }: { announcement: Announcement; 
     <div className="card-shadow rounded-[16px] bg-white p-4">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-2">
-          <ClubIcon colorHex={club.color_hex} size={28} />
+          <ClubIcon colorHex={club.color_hex} iconName={club.icon_name} size={28} />
           <span className="text-xs font-semibold text-gray-500">{club.name}</span>
         </div>
         <span className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold" style={{ backgroundColor: `#${club.color_hex}22`, color: `#${club.color_hex}` }}>

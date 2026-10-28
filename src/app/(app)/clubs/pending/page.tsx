@@ -49,7 +49,7 @@ export default async function PendingPage() {
             return (
               <div key={club.id} className="card-shadow rounded-[18px] bg-white p-4 space-y-3">
                 <div className="flex items-center gap-3">
-                  <ClubIcon colorHex={club.color_hex} size={44} />
+                  <ClubIcon colorHex={club.color_hex} iconName={club.icon_name} size={44} />
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-gray-900">{club.name}</p>
                     <p className="text-xs text-gray-500">{club.category} · {club.meeting_frequency}</p>

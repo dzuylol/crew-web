@@ -280,7 +280,7 @@ function JoinedClubCard({ club, userId, nextMeeting }: { club: Club; userId: str
     <div className="card-shadow overflow-hidden rounded-[18px]">
       {/* Colored header */}
       <div className="flex items-center gap-2.5 px-4 py-3" style={{ backgroundColor: `#${club.color_hex}` }}>
-        <ClubIcon colorHex={club.color_hex} size={32} />
+        <ClubIcon colorHex={club.color_hex} iconName={club.icon_name} size={32} />
         <span className="flex-1 font-semibold text-white">{club.name}</span>
         {role && (
           <span className="rounded-full bg-white/25 px-2 py-0.5 text-[11px] font-semibold text-white">
@@ -317,7 +317,7 @@ function DiscoverCard({ club, nextMeeting, onJoin }: { club: Club; nextMeeting: 
   return (
     <div className="card-shadow overflow-hidden rounded-[16px] bg-white">
       <div className="h-20 w-full flex items-center justify-center" style={{ backgroundColor: `#${club.color_hex}` }}>
-        <ClubIcon colorHex={club.color_hex} size={40} />
+        <ClubIcon colorHex={club.color_hex} iconName={club.icon_name} size={40} />
       </div>
       <div className="p-3 space-y-2">
         <p className="font-semibold text-sm text-gray-900 leading-tight">{club.name}</p>
@@ -340,7 +340,7 @@ function FeaturedCard({ club, nextMeeting, onJoin }: { club: Club; nextMeeting: 
   return (
     <div className="card-shadow overflow-hidden rounded-[18px]" style={{ backgroundColor: `#${club.color_hex}` }}>
       <div className="p-5 text-white">
-        <ClubIcon colorHex={club.color_hex} size={48} className="mb-3" />
+        <ClubIcon colorHex={club.color_hex} iconName={club.icon_name} size={48} className="mb-3" />
         <h3 className="text-lg font-bold">{club.name}</h3>
         <p className="mt-1 text-sm opacity-80 line-clamp-2">{club.description}</p>
         {nextMeeting && (
@@ -363,7 +363,7 @@ function FeaturedCard({ club, nextMeeting, onJoin }: { club: Club; nextMeeting: 
 function ExploreCard({ club, nextMeeting, onJoin }: { club: Club; nextMeeting: Meeting | undefined; onJoin: () => void }) {
   return (
     <div className="card-shadow flex items-center gap-3 rounded-[16px] bg-white p-4">
-      <ClubIcon colorHex={club.color_hex} size={44} />
+      <ClubIcon colorHex={club.color_hex} iconName={club.icon_name} size={44} />
       <div className="min-w-0 flex-1">
         <p className="font-semibold text-gray-900">{club.name}</p>
         <p className="text-xs text-gray-400">{club.category}{nextMeeting ? ` · ${new Date(nextMeeting.date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}` : ""}</p>

@@ -143,7 +143,7 @@ export default function SchedulePage() {
                     return (
                       <Link key={m.id} href={`/clubs/${club.id}`}>
                         <div className="card-shadow flex items-start gap-3 rounded-[16px] bg-white p-4">
-                          <ClubIcon colorHex={club.color_hex} size={40} />
+                          <ClubIcon colorHex={club.color_hex} iconName={club.icon_name} size={40} />
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center justify-between gap-2">
                               <span className="text-xs text-gray-400">

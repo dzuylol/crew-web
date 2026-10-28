@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import type { ClubCategory } from "@/types";
-import { CATEGORIES, PALETTE_HEXES } from "@/types";
+import { CATEGORIES, PALETTE_HEXES, CLUB_ICONS } from "@/types";
+import ClubIcon from "@/components/ui/ClubIcon";
 
 export default function CreateClubPage() {
   const [name, setName] = useState("");
@@ -13,6 +14,7 @@ export default function CreateClubPage() {
   const [category, setCategory] = useState<ClubCategory>("STEM");
   const [frequency, setFrequency] = useState("Weekly");
   const [colorIdx, setColorIdx] = useState(0);
+  const [iconName, setIconName] = useState(CLUB_ICONS[0]);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
@@ -32,7 +34,7 @@ export default function CreateClubPage() {
       category,
       meeting_frequency: frequency,
       color_hex: PALETTE_HEXES[colorIdx],
-      icon_name: "users",
+      icon_name: iconName,
       admin_id: user.id,
       officer_ids: [],
       member_ids: [],
@@ -84,20 +86,48 @@ export default function CreateClubPage() {
           </div>
         </div>
 
-        <div className="card-shadow rounded-[20px] bg-white p-5">
-          <p className="mb-3 text-xs font-semibold text-gray-500">Club color</p>
-          <div className="flex flex-wrap gap-2.5">
-            {PALETTE_HEXES.map((hex, i) => (
-              <button key={hex} type="button" onClick={() => setColorIdx(i)}
-                className="h-9 w-9 rounded-full transition-transform"
-                style={{
-                  backgroundColor: `#${hex}`,
-                  transform: colorIdx === i ? "scale(1.2)" : undefined,
-                  outline: colorIdx === i ? `2px solid #${hex}` : undefined,
-                  outlineOffset: "2px",
-                }}
-              />
-            ))}
+        <div className="card-shadow rounded-[20px] bg-white p-5 space-y-5">
+          <div>
+            <p className="mb-3 text-xs font-semibold text-gray-500">Club color</p>
+            <div className="flex flex-wrap gap-2.5">
+              {PALETTE_HEXES.map((hex, i) => (
+                <button key={hex} type="button" onClick={() => setColorIdx(i)}
+                  className="h-9 w-9 rounded-full transition-transform"
+                  style={{
+                    backgroundColor: `#${hex}`,
+                    transform: colorIdx === i ? "scale(1.2)" : undefined,
+                    outline: colorIdx === i ? `2px solid #${hex}` : undefined,
+                    outlineOffset: "2px",
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <p className="mb-3 text-xs font-semibold text-gray-500">Club icon</p>
+            <div className="grid grid-cols-6 gap-2">
+              {CLUB_ICONS.map((icon) => {
+                const selected = iconName === icon;
+                return (
+                  <button key={icon} type="button" onClick={() => setIconName(icon)}
+                    className="flex items-center justify-center rounded-xl transition-transform"
+                    style={{
+                      aspectRatio: "1",
+                      transform: selected ? "scale(1.1)" : undefined,
+                      outline: selected ? `2px solid #${PALETTE_HEXES[colorIdx]}` : undefined,
+                      outlineOffset: "2px",
+                    }}
+                  >
+                    <ClubIcon
+                      colorHex={selected ? PALETTE_HEXES[colorIdx] : "E5E7EB"}
+                      iconName={icon}
+                      size={48}
+                    />
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
 
