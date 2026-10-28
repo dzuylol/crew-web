@@ -31,10 +31,13 @@ export default function Sidebar({ profile }: { profile: AppUser | null }) {
   return (
     <aside className="hidden md:flex fixed left-0 top-0 h-dvh w-[220px] flex-col border-r border-gray-100 bg-white z-40">
       {/* Logo */}
-      <div className="flex items-center px-4 py-5 border-b border-gray-100">
-        <div className="flex h-11 w-11 items-center justify-center rounded-[14px] bg-gray-900 shadow-sm">
-          <Image src="/paw-logo.png" alt="Crew" width={30} height={30} className="invert" />
+      <div className="flex items-center gap-3 px-4 py-5 border-b border-gray-100">
+        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] bg-gray-900 shadow-sm">
+          <Image src="/paw-logo.png" alt="" width={30} height={30} />
         </div>
+        <span className="text-[17px] font-semibold tracking-tight text-gray-900" style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif" }}>
+          Crew
+        </span>
       </div>
 
       {/* Nav */}
