@@ -33,7 +33,7 @@ export default function Sidebar({ profile }: { profile: AppUser | null }) {
       {/* Logo */}
       <div className="flex items-center gap-3 px-4 py-5 border-b border-gray-100">
         <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] bg-gray-900 shadow-sm">
-          <Image src="/paw-logo.png" alt="" width={40} height={40} className="invert" />
+          <Image src="/paw-logo.png" alt="" width={40} height={40} style={{ filter: "brightness(0) invert(1)" }} />
         </div>
         <span className="text-[20px] font-bold tracking-tight text-gray-900" style={{ fontFamily: "var(--font-inter), 'Inter', sans-serif" }}>
           Crew
