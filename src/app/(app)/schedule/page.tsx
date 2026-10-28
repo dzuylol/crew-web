@@ -142,10 +142,10 @@ export default function SchedulePage() {
 
         {/* Decorative bg circles */}
         <div className="absolute pointer-events-none" style={{ inset: 0, overflow: "hidden" }}>
-          <div className="absolute pointer-events-none -right-16 -top-8 h-60 w-60 rounded-full border-[40px] border-white/15" />
-          <div className="absolute pointer-events-none right-36 top-2 h-32 w-32 rounded-full border-[30px] border-white/12" />
-          <div className="absolute pointer-events-none right-8 -bottom-20 h-52 w-52 rounded-full border-[36px] border-white/8" />
-          <div className="absolute pointer-events-none -right-20 -top-36 h-[460px] w-[460px] rounded-full border-[26px] border-white/5" />
+          <div className="absolute pointer-events-none -right-10 -top-20 h-64 w-64 rounded-full border-[20px] border-white/15" />
+          <div className="absolute pointer-events-none right-32 -top-8 h-64 w-64 rounded-full border-[20px] border-white/10" />
+          <div className="absolute pointer-events-none right-12 -bottom-24 h-64 w-64 rounded-full border-[20px] border-white/7" />
+          <div className="absolute pointer-events-none -right-24 top-2 h-64 w-64 rounded-full border-[20px] border-white/5" />
         </div>
 
         <div className="relative flex items-end justify-between gap-4 mb-6">

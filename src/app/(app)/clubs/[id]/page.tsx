@@ -68,10 +68,10 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ id:
       {/* Crescent header */}
       <div className="crescent-header relative px-5 pt-12 pb-20 text-white" style={{ backgroundColor: `#${club.color_hex}` }}>
         {/* Decorative rings */}
-        <div className="pointer-events-none absolute -right-12 -top-16 h-72 w-72 rounded-full border-[40px] border-white/15" />
-        <div className="pointer-events-none absolute right-28 top-4 h-44 w-44 rounded-full border-[28px] border-white/10" />
-        <div className="pointer-events-none absolute right-4 -bottom-24 h-56 w-56 rounded-full border-[36px] border-white/8" />
-        <div className="pointer-events-none absolute -right-24 -top-40 h-[500px] w-[500px] rounded-full border-[24px] border-white/5" />
+        <div className="pointer-events-none absolute -right-8 -top-12 h-64 w-64 rounded-full border-[20px] border-white/15" />
+        <div className="pointer-events-none absolute right-20 top-8 h-64 w-64 rounded-full border-[20px] border-white/10" />
+        <div className="pointer-events-none absolute right-8 -bottom-16 h-64 w-64 rounded-full border-[20px] border-white/7" />
+        <div className="pointer-events-none absolute -right-20 -top-28 h-64 w-64 rounded-full border-[20px] border-white/5" />
         <div className="relative flex items-start gap-3">
           <Link href="/clubs" className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/20">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
