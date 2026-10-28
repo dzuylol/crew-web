@@ -21,8 +21,9 @@ export const metadata: Metadata = {
   title: "Crew",
   description: "Meetings and updates for every Plano Senior High club, all in one hub.",
   icons: [
-    { rel: "icon", url: "/paw-logo.png", sizes: "any" },
-    { rel: "apple-touch-icon", url: "/paw-logo.png" },
+    { rel: "icon", url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+    { rel: "icon", url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+    { rel: "apple-touch-icon", url: "/apple-touch-icon.png" },
   ],
 };
 
