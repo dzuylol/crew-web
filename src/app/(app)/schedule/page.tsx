@@ -206,7 +206,7 @@ export default function SchedulePage() {
       </div>
 
       {/* Two-column body */}
-      <div className="px-5 py-6 md:px-8 md:grid md:grid-cols-[1fr_280px] md:gap-6 md:items-start">
+      <div className="px-5 py-6 md:px-8 lg:grid lg:grid-cols-[1fr_260px] lg:gap-6 lg:items-start">
         {/* This week */}
         <div>
           <div className="flex items-center justify-between mb-4">
@@ -285,7 +285,7 @@ export default function SchedulePage() {
         </div>
 
         {/* Week summary */}
-        <div className="mt-6 md:mt-0 space-y-4">
+        <div className="mt-6 lg:mt-0 space-y-4">
           <div className="rounded-2xl bg-white overflow-hidden">
             <div className="px-4 pt-4 pb-3 border-b border-gray-100">
               <h2 className="font-bold text-gray-900 text-sm">Week summary</h2>

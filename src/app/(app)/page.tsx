@@ -111,7 +111,7 @@ export default async function HomePage() {
       </div>
 
       {/* Two-column layout */}
-      <div className="px-5 pb-10 md:px-8 md:grid md:grid-cols-[1fr_340px] md:gap-6 md:items-start">
+      <div className="px-5 pb-10 md:px-8 lg:grid lg:grid-cols-[1fr_280px] lg:gap-6 lg:items-start">
         {/* Left: Schedule at a glance */}
         <div>
           <div className="flex items-center justify-between mb-3">
@@ -135,7 +135,7 @@ export default async function HomePage() {
         </div>
 
         {/* Right: Announcements + Discover */}
-        <div className="mt-6 md:mt-0 space-y-4">
+        <div className="mt-6 lg:mt-0 space-y-4">
           <div>
             <h2 className="text-base font-bold text-gray-900 mb-3">Announcements</h2>
             {myAnnouncements.length === 0 ? (
