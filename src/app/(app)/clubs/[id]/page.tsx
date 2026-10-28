@@ -189,7 +189,7 @@ function MeetingCard({ meeting, club, userId, canDelete, attendeeProfiles, past 
             <div className="flex items-center gap-0.5 shrink-0">
               {!past && <span className="text-xs text-gray-400 mr-1">{relativeDayLabel(meeting.date)}</span>}
               {canDelete && !past && <EditMeetingButton meeting={meeting} colorHex={club.color_hex} />}
-              {canDelete && past && <DeleteMeetingButton meetingId={meeting.id} />}
+              {canDelete && <DeleteMeetingButton meetingId={meeting.id} />}
             </div>
           </div>
           <p className="mt-0.5 text-xs text-gray-500">{meeting.block}{meeting.room ? ` · Room ${meeting.room}` : ""}</p>
