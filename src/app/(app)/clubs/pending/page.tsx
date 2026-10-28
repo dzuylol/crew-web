@@ -21,7 +21,7 @@ export default async function PendingPage() {
   const { data: admins } = adminIds.length
     ? await supabase.from("users").select("id, first_name, last_name, email").in("id", adminIds)
     : { data: [] };
-  const adminMap = Object.fromEntries((admins ?? []).map((u: AppUser) => [u.id, u]));
+  const adminMap = Object.fromEntries((admins ?? []).map((u) => [u.id, u]));
 
   return (
     <div className="min-h-dvh" style={{ background: "var(--background)" }}>
