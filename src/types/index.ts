@@ -39,6 +39,7 @@ export interface AppUser {
   apple_user_id: string | null;
   first_name: string;
   last_name: string;
+  email: string;
   is_super_admin: boolean;
   created_at: string;
 }
@@ -52,9 +53,18 @@ export function getRole(club: Club, userId: string): ClubRole | null {
   return null;
 }
 
-export function canManage(club: Club, userId: string): boolean {
+export function canManage(club: Club, userId: string, isSuperAdmin = false): boolean {
+  if (isSuperAdmin) return true;
   const role = getRole(club, userId);
   return role === "admin" || role === "officer";
+}
+
+export function isClubAdmin(club: Club, userId: string, isSuperAdmin = false): boolean {
+  return isSuperAdmin || club.admin_id === userId;
+}
+
+export function displayName(user: AppUser): string {
+  return `${user.first_name} ${user.last_name}`.trim() || user.email || "Unknown";
 }
 
 export function allMemberCount(club: Club): number {

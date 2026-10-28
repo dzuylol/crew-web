@@ -1,10 +1,13 @@
 import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import type { Club, Meeting, Announcement } from "@/types";
-import { getRole, canManage, allMemberCount, relativeDayLabel } from "@/types";
-import ClubIcon from "@/components/ui/ClubIcon";
+import type { Club, Meeting, Announcement, AppUser } from "@/types";
+import { getRole, canManage, isClubAdmin, allMemberCount, relativeDayLabel } from "@/types";
 import JoinLeaveButton from "./JoinLeaveButton";
+import RsvpButton from "./RsvpButton";
+import AddMeetingButton from "./AddMeetingButton";
+import AddAnnouncementButton from "./AddAnnouncementButton";
+import RosterSection from "./RosterSection";
 
 export default async function ClubDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -12,10 +15,16 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ id:
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) notFound();
 
-  const [{ data: clubData }, { data: meetingsData }, { data: announcementsData }] = await Promise.all([
+  const [
+    { data: clubData },
+    { data: meetingsData },
+    { data: announcementsData },
+    { data: profileData },
+  ] = await Promise.all([
     supabase.from("clubs").select("*").eq("id", id).single(),
     supabase.from("meetings").select("*").eq("club_id", id).order("date"),
     supabase.from("announcements").select("*").eq("club_id", id).order("date", { ascending: false }),
+    supabase.from("users").select("*").eq("id", user.id).single(),
   ]);
 
   if (!clubData) notFound();
@@ -23,23 +32,31 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ id:
   const club = clubData as Club;
   const meetings = (meetingsData ?? []) as Meeting[];
   const announcements = (announcementsData ?? []) as Announcement[];
+  const profile = profileData as AppUser | null;
+  const isSuperAdmin = profile?.is_super_admin ?? false;
+
+  // Fetch roster
+  const rosterIds = [...new Set([club.admin_id, ...club.officer_ids, ...club.member_ids])];
+  const { data: rosterData } = await supabase.from("users").select("*").in("id", rosterIds);
+  const roster = (rosterData ?? []) as AppUser[];
 
   const role = getRole(club, user.id);
-  const manage = canManage(club, user.id);
+  const manage = canManage(club, user.id, isSuperAdmin);
+  const admin = isClubAdmin(club, user.id, isSuperAdmin);
   const memberCount = allMemberCount(club);
 
   const now = new Date().toISOString();
   const upcomingMeetings = meetings.filter((m) => m.date >= now);
-  const nextMeeting = upcomingMeetings[0];
+  const pastMeetings = meetings.filter((m) => m.date < now);
 
   const roleLabel = role === "admin" ? "Admin" : role === "officer" ? "Officer" : "Member";
 
   return (
-    <div className="min-h-dvh">
+    <div className="min-h-dvh" style={{ background: "var(--background)" }}>
       {/* Crescent header */}
       <div className="crescent-header px-5 pt-12 pb-20 text-white" style={{ backgroundColor: `#${club.color_hex}` }}>
         <div className="flex items-start gap-3">
-          <Link href="/clubs" className="mt-1 flex h-8 w-8 items-center justify-center rounded-full bg-white/20">
+          <Link href="/clubs" className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/20">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
               <path d="m15 18-6-6 6-6" />
             </svg>
@@ -50,6 +67,7 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ id:
             <div className="mt-3 flex flex-wrap gap-2">
               <Pill>{memberCount} members</Pill>
               <Pill>{club.meeting_frequency}</Pill>
+              <Pill>{club.category}</Pill>
               {role && <Pill>{roleLabel} ✓</Pill>}
             </div>
           </div>
@@ -57,28 +75,29 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ id:
       </div>
 
       <div className="-mt-10 space-y-5 px-5 pb-8">
-        {/* Join/Leave action */}
-        <JoinLeaveButton club={club} userId={user.id} role={role} />
+        {/* Join/Leave */}
+        {!isSuperAdmin && <JoinLeaveButton club={club} userId={user.id} role={role} />}
 
-        {/* Next meeting */}
-        <Section title="Next meeting">
-          {nextMeeting ? (
-            <MeetingCard meeting={nextMeeting} club={club} showRSVP userId={user.id} />
-          ) : (
+        {/* Officer/Admin actions */}
+        {manage && (
+          <div className="space-y-2">
+            <AddMeetingButton clubId={club.id} colorHex={club.color_hex} />
+            <AddAnnouncementButton clubId={club.id} colorHex={club.color_hex} />
+          </div>
+        )}
+
+        {/* Upcoming meetings */}
+        <Section title={`Upcoming meetings (${upcomingMeetings.length})`}>
+          {upcomingMeetings.length === 0 ? (
             <p className="text-sm text-gray-400">No upcoming meetings.</p>
-          )}
-        </Section>
-
-        {/* All meetings (officers only) */}
-        {manage && upcomingMeetings.length > 1 && (
-          <Section title={`All meetings (${upcomingMeetings.length})`}>
+          ) : (
             <div className="space-y-3">
               {upcomingMeetings.map((m) => (
-                <MeetingCard key={m.id} meeting={m} club={club} showRSVP={false} userId={user.id} />
+                <MeetingCard key={m.id} meeting={m} club={club} userId={user.id} canDelete={manage} />
               ))}
             </div>
-          </Section>
-        )}
+          )}
+        </Section>
 
         {/* Announcements */}
         <Section title="Announcements">
@@ -87,11 +106,27 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ id:
           ) : (
             <div className="space-y-3">
               {announcements.map((a) => (
-                <AnnouncementCard key={a.id} announcement={a} club={club} />
+                <AnnouncementCard key={a.id} announcement={a} club={club} canDelete={manage} />
               ))}
             </div>
           )}
         </Section>
+
+        {/* Roster */}
+        <Section title={`Roster (${rosterIds.length})`}>
+          <RosterSection club={club} members={roster} currentUserId={user.id} isAdmin={admin} />
+        </Section>
+
+        {/* Past meetings (collapsed) */}
+        {pastMeetings.length > 0 && (
+          <Section title={`Past meetings (${pastMeetings.length})`}>
+            <div className="space-y-3">
+              {pastMeetings.slice(0, 3).map((m) => (
+                <MeetingCard key={m.id} meeting={m} club={club} userId={user.id} canDelete={manage} past />
+              ))}
+            </div>
+          </Section>
+        )}
       </div>
     </div>
   );
@@ -114,60 +149,52 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
-function MeetingCard({ meeting, club, showRSVP, userId }: {
-  meeting: Meeting;
-  club: Club;
-  showRSVP: boolean;
-  userId: string;
+function MeetingCard({ meeting, club, userId, canDelete, past }: {
+  meeting: Meeting; club: Club; userId: string; canDelete: boolean; past?: boolean;
 }) {
   const d = new Date(meeting.date);
   const weekday = d.toLocaleDateString("en-US", { weekday: "short" }).toUpperCase();
   const day = d.getDate();
-  const isGoing = meeting.rsvp_user_ids.includes(userId);
 
   return (
-    <div className="card-shadow flex items-start gap-3 rounded-[18px] bg-white p-4">
-      <div className="flex w-12 flex-col items-center justify-center rounded-xl py-2 text-white" style={{ backgroundColor: `#${club.color_hex}` }}>
+    <div className={`card-shadow flex items-start gap-3 rounded-[18px] bg-white p-4 ${past ? "opacity-60" : ""}`}>
+      <div className="flex w-12 shrink-0 flex-col items-center justify-center rounded-xl py-2 text-white"
+        style={{ backgroundColor: `#${club.color_hex}` }}>
         <span className="text-[10px] font-bold">{weekday}</span>
         <span className="text-lg font-bold leading-none">{day}</span>
       </div>
       <div className="min-w-0 flex-1">
-        <p className="font-semibold text-gray-900">{meeting.title}</p>
-        <p className="mt-0.5 text-xs text-gray-500">{meeting.block} · Room {meeting.room}</p>
-        {meeting.description && (
-          <p className="mt-1 text-sm text-gray-600 line-clamp-2">{meeting.description}</p>
-        )}
+        <div className="flex items-center justify-between gap-2">
+          <p className="font-semibold text-gray-900">{meeting.title}</p>
+          {!past && <span className="shrink-0 text-xs text-gray-400">{relativeDayLabel(meeting.date)}</span>}
+        </div>
+        <p className="mt-0.5 text-xs text-gray-500">{meeting.block}{meeting.room ? ` · Room ${meeting.room}` : ""}</p>
+        {meeting.description && <p className="mt-1 text-sm text-gray-600 line-clamp-2">{meeting.description}</p>}
         <p className="mt-1 text-xs text-gray-400">{meeting.rsvp_user_ids.length} going</p>
       </div>
-      {showRSVP && (
-        <span
-          className="shrink-0 rounded-full px-3 py-1.5 text-xs font-semibold"
-          style={isGoing
-            ? { backgroundColor: `#${club.color_hex}`, color: "white" }
-            : { backgroundColor: "#E7E7EC", color: "#374151" }
-          }
-        >
-          {isGoing ? "I'm in ✓" : "I'm in"}
-        </span>
+      {!past && (
+        <RsvpButton
+          meetingId={meeting.id}
+          initialIds={meeting.rsvp_user_ids}
+          userId={userId}
+          colorHex={club.color_hex}
+        />
       )}
     </div>
   );
 }
 
-function AnnouncementCard({ announcement, club }: { announcement: Announcement; club: Club }) {
+function AnnouncementCard({ announcement, club, canDelete }: {
+  announcement: Announcement; club: Club; canDelete: boolean;
+}) {
   const dateStr = new Date(announcement.date).toLocaleDateString("en-US", { month: "short", day: "numeric" });
   return (
     <div className="card-shadow rounded-[16px] bg-white p-4">
-      <div className="flex items-center justify-between">
-        {!announcement.is_read && (
-          <span className="rounded-full px-2 py-0.5 text-[10px] font-bold" style={{ backgroundColor: `#${club.color_hex}22`, color: `#${club.color_hex}` }}>
-            NEW
-          </span>
-        )}
-        <span className="ml-auto text-xs text-gray-400">{dateStr}</span>
+      <div className="flex items-start justify-between gap-2">
+        <p className="font-semibold text-gray-900">{announcement.title}</p>
+        <span className="shrink-0 text-xs text-gray-400">{dateStr}</span>
       </div>
-      <p className="mt-2 font-semibold text-gray-900">{announcement.title}</p>
-      <p className="mt-1 text-sm text-gray-500">{announcement.body}</p>
+      {announcement.body && <p className="mt-1 text-sm text-gray-500">{announcement.body}</p>}
     </div>
   );
 }

@@ -17,7 +17,7 @@ export default async function HomePage() {
       supabase.from("users").select("*").eq("id", user.id).single(),
       supabase.from("clubs").select("*").eq("is_pending", false),
       supabase.from("meetings").select("*").gte("date", new Date().toISOString()).order("date"),
-      supabase.from("announcements").select("*").eq("is_read", false),
+      supabase.from("announcements").select("*").order("date", { ascending: false }),
     ]);
 
   const appUser = profile as AppUser | null;

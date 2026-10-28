@@ -12,6 +12,8 @@ const CLUBS_COLOR = "#8470C8";
 export default function ClubsPage() {
   const [tab, setTab] = useState<"joined" | "explore">("joined");
   const [userId, setUserId] = useState<string | null>(null);
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+  const [pendingCount, setPendingCount] = useState(0);
   const [clubs, setClubs] = useState<Club[]>([]);
   const [meetings, setMeetings] = useState<Meeting[]>([]);
   const [search, setSearch] = useState("");
@@ -25,12 +27,20 @@ export default function ClubsPage() {
       if (!user) return;
       setUserId(user.id);
 
-      const [{ data: c }, { data: m }] = await Promise.all([
+      const [{ data: c }, { data: m }, { data: profile }] = await Promise.all([
         supabase.from("clubs").select("*").eq("is_pending", false),
         supabase.from("meetings").select("*").gte("date", new Date().toISOString()).order("date"),
+        supabase.from("users").select("is_super_admin").eq("id", user.id).single(),
       ]);
       setClubs((c ?? []) as Club[]);
       setMeetings((m ?? []) as Meeting[]);
+
+      if (profile?.is_super_admin) {
+        setIsSuperAdmin(true);
+        const { count } = await supabase.from("clubs").select("id", { count: "exact", head: true }).eq("is_pending", true);
+        setPendingCount(count ?? 0);
+      }
+
       setLoading(false);
     }
     load();
@@ -76,7 +86,27 @@ export default function ClubsPage() {
     <div className="min-h-dvh">
       {/* Header */}
       <div className="crescent-header px-5 pt-12 pb-20 text-white" style={{ backgroundColor: CLUBS_COLOR }}>
-        <h1 className="text-2xl font-bold">Clubs</h1>
+        <div className="flex items-center justify-between gap-3">
+          <h1 className="text-2xl font-bold">Clubs</h1>
+          <div className="flex items-center gap-2">
+            {isSuperAdmin && pendingCount > 0 && (
+              <Link href="/clubs/pending"
+                className="flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1.5 text-xs font-semibold text-white">
+                <span className="flex h-4 w-4 items-center justify-center rounded-full bg-red-400 text-[10px] font-bold leading-none">
+                  {pendingCount}
+                </span>
+                Pending
+              </Link>
+            )}
+            <Link href="/clubs/create"
+              className="flex items-center gap-1 rounded-full bg-white/20 px-3 py-1.5 text-xs font-semibold text-white">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
+                <path d="M12 5v14M5 12h14" />
+              </svg>
+              Create
+            </Link>
+          </div>
+        </div>
       </div>
 
       <div className="-mt-10 space-y-5 pb-6">
