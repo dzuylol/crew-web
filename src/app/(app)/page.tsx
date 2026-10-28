@@ -58,7 +58,7 @@ export default async function HomePage() {
     <div className="min-h-dvh bg-[#F2F2F7]">
       {/* Hero */}
       <div className="relative overflow-hidden rounded-b-[28px] px-6 pt-8 pb-10 md:px-8 md:pt-10" style={{ backgroundColor: PRIMARY }}>
-        <div className="pointer-events-none absolute right-[-40px] top-1/2 -translate-y-1/2 w-[55%] select-none opacity-30">
+        <div className="pointer-events-none absolute right-[-20px] top-1/2 -translate-y-1/2 w-[40%] select-none opacity-30">
           <Image src="/wildcat.webp" alt="" width={600} height={275} className="w-full h-auto" />
         </div>
         <div className="relative max-w-2xl">
