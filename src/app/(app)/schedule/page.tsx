@@ -125,7 +125,8 @@ export default function SchedulePage() {
   return (
     <div className="min-h-dvh bg-[#F2F2F7]">
       {/* Header */}
-      <div className="px-6 pt-8 pb-10 md:px-8 rounded-b-[28px]" style={{ backgroundColor: SCHEDULE_COLOR }}>
+      <div className="px-6 pt-8 pb-10 md:px-8 rounded-b-[28px]"
+        style={{ backgroundColor: SCHEDULE_COLOR, boxShadow: "0 8px 24px rgba(59,94,165,0.35), 0 2px 8px rgba(0,0,0,0.15)" }}>
         <div className="flex items-end justify-between gap-4 mb-6">
           <div>
             <h1 className="text-3xl font-black text-white md:text-4xl">My Schedule</h1>
@@ -137,6 +138,14 @@ export default function SchedulePage() {
           </div>
           {/* Week nav */}
           <div className="flex items-center gap-2">
+            {!isCurrentWeek && (
+              <button
+                onClick={() => setWeekOffset(0)}
+                className="rounded-full bg-white px-3 py-1 text-xs font-bold"
+                style={{ color: SCHEDULE_COLOR }}>
+                Today
+              </button>
+            )}
             <button
               onClick={() => setWeekOffset(w => w - 1)}
               className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 hover:bg-white/30 transition-colors">
@@ -148,14 +157,6 @@ export default function SchedulePage() {
               className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 hover:bg-white/30 transition-colors">
               <ChevronRight size={16} className="text-white" />
             </button>
-            {!isCurrentWeek && (
-              <button
-                onClick={() => setWeekOffset(0)}
-                className="rounded-full bg-white px-3 py-1 text-xs font-bold"
-                style={{ color: SCHEDULE_COLOR }}>
-                Today
-              </button>
-            )}
           </div>
         </div>
 
@@ -234,7 +235,7 @@ export default function SchedulePage() {
                       const label = relativeDayLabel(m.date);
                       return (
                         <Link key={m.id} href={`/clubs/${club.id}`}>
-                          <div className="flex items-start gap-3 rounded-2xl bg-white p-4 shadow-sm">
+                          <div className="flex items-start gap-3 rounded-2xl bg-white p-4" style={{ boxShadow: "0 4px 14px rgba(0,0,0,0.10), 0 1px 4px rgba(0,0,0,0.08)" }}>
                             <ClubIcon colorHex={club.color_hex} iconName={club.icon_name} size={40} />
                             <div className="min-w-0 flex-1">
                               <div className="flex items-center gap-2 mb-0.5">
