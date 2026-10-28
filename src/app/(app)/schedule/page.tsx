@@ -240,7 +240,7 @@ export default function SchedulePage() {
               </Link>
             )}
           </div>
-          <div className="space-y-6">
+          <div className="flex flex-col gap-8">
             {groups.map((group, gi) => {
               if (!group.hasMeetings) {
                 const first = group.days[0];
@@ -262,7 +262,7 @@ export default function SchedulePage() {
                     <span className="text-[10px] font-bold text-gray-400 tracking-wider">{dayAbbr}</span>
                     <span className="text-2xl font-black text-gray-800 leading-none">{dayNum}</span>
                   </div>
-                  <div className="flex-1 min-w-0 space-y-[10px]">
+                  <div className="flex-1 min-w-0 flex flex-col gap-4">
                     {dayMeetings.map((m) => {
                       const club = clubs.find((c) => c.id === m.club_id);
                       if (!club) return null;
@@ -270,7 +270,7 @@ export default function SchedulePage() {
                       const going = checkGoing(m);
                       const label = relativeDayLabel(m.date);
                       return (
-                        <Link key={m.id} href={`/clubs/${club.id}`}>
+                        <Link key={m.id} href={`/clubs/${club.id}`} className="block">
                           <div className="flex items-center gap-4 rounded-2xl bg-white px-5 py-4" style={{ boxShadow: "0 4px 14px rgba(0,0,0,0.10), 0 1px 4px rgba(0,0,0,0.08)" }}>
                             <ClubIcon colorHex={club.color_hex} iconName={club.icon_name} size={44} />
                             <div className="min-w-0 flex-1">
