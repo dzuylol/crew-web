@@ -80,7 +80,7 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ id:
 
         {/* Officer/Admin actions */}
         {manage && (
-          <div className="space-y-2">
+          <div id="post" className="space-y-2">
             <AddMeetingButton clubId={club.id} colorHex={club.color_hex} />
             <AddAnnouncementButton clubId={club.id} colorHex={club.color_hex} />
           </div>

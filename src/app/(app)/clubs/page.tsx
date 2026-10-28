@@ -89,11 +89,11 @@ export default function ClubsPage() {
       {/* Header */}
       <div className="relative overflow-hidden rounded-b-[28px] px-6 pt-8 pb-10 md:px-8" style={{ backgroundColor: CLUBS_COLOR }}>
         {/* Decorative rings */}
-        <div className="pointer-events-none absolute -right-16 -top-16 h-72 w-72 rounded-full border-[2.5px] border-white/15" />
-        <div className="pointer-events-none absolute -right-6 top-8 h-96 w-96 rounded-full border-2 border-white/10" />
-        <div className="pointer-events-none absolute right-24 -bottom-24 h-80 w-80 rounded-full border-[2.5px] border-white/15" />
-        <div className="pointer-events-none absolute right-60 -top-8 h-48 w-48 rounded-full border-2 border-white/10" />
-        <div className="pointer-events-none absolute -right-2 -bottom-4 h-56 w-56 rounded-full border-2 border-white/10" />
+        <div className="pointer-events-none absolute -right-16 -top-16 h-72 w-72 rounded-full border-[6px] border-white/20" />
+        <div className="pointer-events-none absolute -right-6 top-8 h-96 w-96 rounded-full border-[5px] border-white/15" />
+        <div className="pointer-events-none absolute right-24 -bottom-24 h-80 w-80 rounded-full border-[6px] border-white/20" />
+        <div className="pointer-events-none absolute right-60 -top-8 h-48 w-48 rounded-full border-[5px] border-white/15" />
+        <div className="pointer-events-none absolute -right-2 -bottom-4 h-56 w-56 rounded-full border-[5px] border-white/15" />
 
         <div className="relative flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <div>
@@ -311,7 +311,8 @@ function JoinedClubCard({ club, userId, nextMeeting, latestAnnouncement }: {
 }) {
   const role = getRole(club, userId);
   const roleLabel = role === "admin" ? "Admin" : role === "officer" ? "Officer" : "Member";
-  const roleColor = role === "officer" || role === "admin" ? "#F59E0B" : "rgba(255,255,255,0.6)";
+  const isElevated = role === "officer" || role === "admin";
+  const roleColor = isElevated ? "#F59E0B" : "rgba(255,255,255,0.55)";
 
   const dateStr = nextMeeting
     ? `${new Date(nextMeeting.date).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })} · ${nextMeeting.block} · Room ${nextMeeting.room}`
@@ -321,47 +322,51 @@ function JoinedClubCard({ club, userId, nextMeeting, latestAnnouncement }: {
   const goingCount = nextMeeting?.rsvp_user_ids.length ?? 0;
 
   return (
-    <div className="rounded-2xl overflow-hidden" style={{ backgroundColor: `#${club.color_hex}` }}>
-      {/* Top row */}
-      <div className="flex items-center gap-3 px-4 pt-4 pb-2">
-        <ClubIcon colorHex={club.color_hex} iconName={club.icon_name} size={36} />
+    <div className="rounded-[20px] overflow-hidden shadow-md" style={{ backgroundColor: `#${club.color_hex}` }}>
+      {/* Header */}
+      <div className="relative flex items-center gap-3 px-4 pt-4 pb-3">
+        {/* Subtle decorative ring */}
+        <div className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full border-[5px] border-white/10" />
+        <div className="pointer-events-none absolute -right-2 top-4 h-20 w-20 rounded-full border-[4px] border-white/10" />
+        <ClubIcon colorHex={club.color_hex} iconName={club.icon_name} size={34} />
         <span className="flex-1 font-bold text-white text-base truncate">{club.name}</span>
         <span className="shrink-0 rounded-full border px-2.5 py-0.5 text-[11px] font-semibold"
           style={{ borderColor: roleColor, color: roleColor }}>
           {roleLabel}
         </span>
-        <ChevronRight size={16} className="shrink-0 text-white/40" />
+        <ChevronRight size={15} className="shrink-0 text-white/40" />
       </div>
 
-      {/* Meeting info */}
-      {dateStr && (
-        <div className="px-4 pb-2">
-          <p className="text-xs text-white/60">{dateStr}</p>
-        </div>
-      )}
-
-      {/* Announcement */}
-      {latestAnnouncement && (
-        <div className="mx-4 mb-3 rounded-xl bg-white/10 px-3 py-2.5">
-          <p className="font-semibold text-white text-sm">{latestAnnouncement.title}</p>
-          {latestAnnouncement.body && (
-            <p className="text-white/70 text-xs mt-0.5 line-clamp-2">{latestAnnouncement.body}</p>
-          )}
-        </div>
-      )}
-
-      {/* Bottom row */}
-      <div className="flex items-center justify-between px-4 pb-4 mt-1">
-        <span className="text-sm text-white/60">{goingCount} going</span>
-        {isGoing && (
-          <span className="text-sm font-semibold" style={{ color: "#34D399" }}>✓ You&apos;re in</span>
+      {/* Body — white panel */}
+      <div className="mx-3 mb-3 rounded-[14px] bg-white/95 px-3 py-3 space-y-2.5">
+        {dateStr && (
+          <p className="text-xs text-gray-500">{dateStr}</p>
         )}
-        {(role === "officer" || role === "admin") && !isGoing && (
-          <div className="flex gap-2">
-            <span className="rounded-full bg-white/15 px-3 py-1 text-xs font-semibold text-white">Edit</span>
-            <span className="rounded-full bg-white/15 px-3 py-1 text-xs font-semibold text-white">Post update</span>
+        {latestAnnouncement && (
+          <div>
+            <p className="font-semibold text-gray-900 text-sm leading-snug">{latestAnnouncement.title}</p>
+            {latestAnnouncement.body && (
+              <p className="text-gray-500 text-xs mt-0.5 line-clamp-2">{latestAnnouncement.body}</p>
+            )}
           </div>
         )}
+        <div className="flex items-center justify-between pt-0.5">
+          <span className="text-xs text-gray-400">{goingCount} going</span>
+          {isGoing ? (
+            <span className="text-xs font-semibold" style={{ color: "#16A34A" }}>✓ You&apos;re in</span>
+          ) : isElevated ? (
+            <div className="flex gap-1.5">
+              <Link href={`/clubs/${club.id}/edit`} onClick={(e) => e.stopPropagation()}
+                className="rounded-full bg-gray-100 px-2.5 py-1 text-[11px] font-semibold text-gray-600">
+                Edit
+              </Link>
+              <Link href={`/clubs/${club.id}#post`} onClick={(e) => e.stopPropagation()}
+                className="rounded-full bg-gray-100 px-2.5 py-1 text-[11px] font-semibold text-gray-600">
+                Post update
+              </Link>
+            </div>
+          ) : null}
+        </div>
       </div>
     </div>
   );

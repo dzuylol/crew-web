@@ -20,7 +20,10 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "Crew",
   description: "Meetings and updates for every Plano Senior High club, all in one hub.",
-  icons: { icon: "/paw-logo.png" },
+  icons: [
+    { rel: "icon", url: "/paw-logo.png", sizes: "any" },
+    { rel: "apple-touch-icon", url: "/paw-logo.png" },
+  ],
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
