@@ -35,6 +35,7 @@ export default function SchedulePage() {
   const [weekOffset, setWeekOffset] = useState(0);
   const [selectedDay, setSelectedDay] = useState<Date>(new Date());
   const [loading, setLoading] = useState(true);
+  const [rsvpOverrides, setRsvpOverrides] = useState<Map<string, boolean>>(new Map());
 
   useEffect(() => {
     async function load() {
@@ -107,6 +108,19 @@ export default function SchedulePage() {
     })
     .filter(Boolean)
     .slice(0, 2) as { club: Club; meeting: Meeting }[];
+
+  function checkGoing(m: Meeting): boolean {
+    if (rsvpOverrides.has(m.id)) return rsvpOverrides.get(m.id)!;
+    return userId ? m.rsvp_user_ids.includes(userId) : false;
+  }
+
+  async function toggleRsvp(e: React.MouseEvent, meetingId: string, currentGoing: boolean) {
+    e.preventDefault();
+    e.stopPropagation();
+    setRsvpOverrides((prev) => new Map([...prev, [meetingId, !currentGoing]]));
+    const supabase = createClient();
+    await supabase.rpc("toggle_rsvp", { meeting_id: meetingId });
+  }
 
   // Group days into "no meetings" spans and meeting days
   const groups: { days: Date[]; hasMeetings: boolean }[] = [];
@@ -199,22 +213,24 @@ export default function SchedulePage() {
       <div className="px-5 py-6 md:px-8 md:grid md:grid-cols-[1fr_280px] md:gap-6 md:items-start">
         {/* This week */}
         <div>
-          <h2 className="font-bold text-gray-900 mb-4">This week</h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="font-bold text-gray-900">This week</h2>
+            {freeDaysCount > 0 && (
+              <Link href="/clubs" className="text-xs font-semibold" style={{ color: SCHEDULE_COLOR }}>
+                Fill a free day →
+              </Link>
+            )}
+          </div>
           <div className="space-y-2">
             {groups.map((group, gi) => {
               if (!group.hasMeetings) {
                 const first = group.days[0];
                 const last = group.days[group.days.length - 1];
                 const span = group.days.length === 1
-                  ? `${first.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}`
-                  : `${first.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })} to ${last.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}`;
+                  ? first.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })
+                  : `${first.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })} – ${last.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}`;
                 return (
-                  <div key={gi} className="flex items-center justify-between py-2 px-1">
-                    <p className="text-sm text-gray-400 font-medium">{span} · No meetings</p>
-                    <Link href="/clubs" className="text-xs font-semibold" style={{ color: SCHEDULE_COLOR }}>
-                      Fill a day →
-                    </Link>
-                  </div>
+                  <p key={gi} className="text-sm text-gray-400 py-1 px-1">{span} · No meetings</p>
                 );
               }
               const day = group.days[0];
@@ -232,7 +248,7 @@ export default function SchedulePage() {
                       const club = clubs.find((c) => c.id === m.club_id);
                       if (!club) return null;
                       const role = getRole(club, userId);
-                      const isGoing = m.rsvp_user_ids.includes(userId);
+                      const going = checkGoing(m);
                       const label = relativeDayLabel(m.date);
                       return (
                         <Link key={m.id} href={`/clubs/${club.id}`}>
@@ -253,12 +269,14 @@ export default function SchedulePage() {
                                 {m.rsvp_user_ids.length > 0 ? `${m.rsvp_user_ids.length} going` : "Be the first to join"} · {label}
                               </p>
                             </div>
-                            <span className="shrink-0 rounded-full px-3 py-1.5 text-xs font-bold"
-                              style={isGoing
+                            <button
+                              onClick={(e) => toggleRsvp(e, m.id, going)}
+                              className="shrink-0 rounded-full px-3 py-1.5 text-xs font-bold cursor-pointer transition-colors hover:opacity-80"
+                              style={going
                                 ? { backgroundColor: "#1C1C1E", color: "white" }
-                                : { backgroundColor: "#F3F4F6", color: "#6B7280" }}>
-                              {isGoing ? "I'm in ✓" : "I'm in"}
-                            </span>
+                                : { backgroundColor: "#E7E7EC", color: "#374151" }}>
+                              {going ? "I'm in ✓" : "RSVP"}
+                            </button>
                           </div>
                         </Link>
                       );
