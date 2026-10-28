@@ -5,6 +5,7 @@ import Image from "next/image";
 import type { Club, Meeting, Announcement, AppUser } from "@/types";
 import { getRole, relativeDayLabel, stableColor, displayName, allMemberCount } from "@/types";
 import ClubIcon from "@/components/ui/ClubIcon";
+import HomeRsvpButton from "./HomeRsvpButton";
 
 const PRIMARY = "#7A1F2E";
 
@@ -285,7 +286,6 @@ function ScheduleCard({ meeting, club, userId }: { meeting: Meeting; club: Club;
   const dayAbbr = d.toLocaleDateString("en-US", { weekday: "short" }).toUpperCase();
   const dateStr = `${dayAbbr} · ${d.toLocaleDateString("en-US", { month: "short", day: "numeric" }).toUpperCase()} · ${meeting.block}`;
   const label = relativeDayLabel(meeting.date);
-  const isGoing = meeting.rsvp_user_ids.includes(userId);
 
   return (
     <div className="flex flex-col rounded-2xl bg-white p-4 shadow-sm">
@@ -301,12 +301,7 @@ function ScheduleCard({ meeting, club, userId }: { meeting: Meeting; club: Club;
       <p className="text-xs text-gray-500 mt-0.5">Room {meeting.room} · {meeting.description}</p>
       <div className="mt-3 flex items-center justify-between">
         <p className="text-xs text-gray-400">{meeting.rsvp_user_ids.length} going</p>
-        <span className="rounded-full px-3 py-1 text-xs font-semibold"
-          style={isGoing
-            ? { backgroundColor: "#1C1C1E", color: "white" }
-            : { backgroundColor: "#F3F4F6", color: "#6B7280" }}>
-          {isGoing ? "I'm in ✓" : "I'm in"}
-        </span>
+        <HomeRsvpButton meetingId={meeting.id} initialIds={meeting.rsvp_user_ids} userId={userId} />
       </div>
     </div>
   );

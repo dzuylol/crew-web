@@ -322,7 +322,7 @@ function JoinedClubCard({ club, userId, nextMeeting, latestAnnouncement }: {
       <div className="relative flex items-center gap-3 px-4 pt-4 pb-3">
         {/* Decorative ring */}
         <div className="pointer-events-none absolute -right-10 -top-10 h-36 w-36 rounded-full border-[8px] border-white/10" />
-        <ClubIcon colorHex={club.color_hex} iconName={club.icon_name} size={34} />
+        <ClubIcon colorHex={club.color_hex} iconName={club.icon_name} size={34} glass />
         <span className="flex-1 font-bold text-white text-base truncate">{club.name}</span>
         <span className="shrink-0 rounded-full border px-2.5 py-0.5 text-[11px] font-semibold"
           style={{ borderColor: roleColor, color: roleColor }}>

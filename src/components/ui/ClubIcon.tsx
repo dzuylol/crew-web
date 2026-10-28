@@ -37,16 +37,22 @@ interface ClubIconProps {
   iconName?: string;
   size?: number;
   className?: string;
+  /** Use on colored backgrounds — frosted glass instead of solid club color */
+  glass?: boolean;
 }
 
-export default function ClubIcon({ colorHex, iconName = "users", size = 40, className = "" }: ClubIconProps) {
+export default function ClubIcon({ colorHex, iconName = "users", size = 40, className = "", glass = false }: ClubIconProps) {
   const Icon = ICON_MAP[iconName] ?? Users;
   const iconSize = Math.round(size * 0.52);
 
+  const style = glass
+    ? { width: size, height: size, backgroundColor: "rgba(255,255,255,0.22)", border: "1.5px solid rgba(255,255,255,0.35)" }
+    : { width: size, height: size, backgroundColor: `#${colorHex}` };
+
   return (
     <div
-      className={`flex items-center justify-center rounded-2xl flex-shrink-0 shadow-sm ${className}`}
-      style={{ width: size, height: size, backgroundColor: `rgba(255,255,255,0.22)`, border: "1.5px solid rgba(255,255,255,0.35)" }}
+      className={`flex items-center justify-center rounded-2xl flex-shrink-0 ${className}`}
+      style={style}
     >
       <Icon size={iconSize} color="white" strokeWidth={2} />
     </div>

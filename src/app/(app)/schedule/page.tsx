@@ -170,24 +170,25 @@ export default function SchedulePage() {
               <button
                 key={day.toISOString()}
                 onClick={() => setSelectedDay(day)}
-                className="flex flex-col items-center gap-0.5 rounded-xl py-2 transition-colors"
+                className="flex flex-col items-center justify-center gap-0.5 rounded-xl py-2.5 transition-colors h-[68px]"
                 style={isSelected ? { backgroundColor: "rgba(255,255,255,0.2)" } : undefined}>
                 <span className="text-[10px] font-bold uppercase tracking-wider"
                   style={{ color: isSelected ? "white" : "rgba(255,255,255,0.5)" }}>
                   {day.toLocaleDateString("en-US", { weekday: "short" })}
                 </span>
-                <span className="text-base font-black"
+                <span className="text-base font-black leading-none"
                   style={{ color: isSelected || isToday ? "white" : "rgba(255,255,255,0.7)" }}>
                   {day.getDate()}
                 </span>
-                {isToday && (
-                  <span className="text-[10px] font-bold uppercase tracking-wider"
+                {isToday ? (
+                  <span className="text-[9px] font-bold uppercase tracking-wider"
                     style={{ color: isSelected ? "white" : "rgba(255,255,255,0.5)" }}>
                     TODAY
                   </span>
+                ) : (
+                  <div className="h-1 w-1 rounded-full"
+                    style={{ backgroundColor: hasMeeting ? "white" : "transparent" }} />
                 )}
-                <div className="h-1 w-1 rounded-full"
-                  style={{ backgroundColor: hasMeeting ? "white" : "transparent" }} />
               </button>
             );
           })}
