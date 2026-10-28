@@ -99,14 +99,13 @@ export default function SchedulePage() {
 
   // "Got free time?" — clubs user hasn't joined with meetings on free days
   const freeDays = weekDays.filter(d => meetingsOn(d).length === 0);
-  const freeDaySuggestions = clubs
-    .filter((c) => !joinedClubIds.has(c.id))
-    .map((c) => {
-      const m = meetings.find(x => x.club_id === c.id && freeDays.some(d => sameDay(new Date(x.date), d)));
-      return m ? { club: c, meeting: m } : null;
-    })
-    .filter(Boolean)
-    .slice(0, 2) as { club: Club; meeting: Meeting }[];
+  // One club suggestion per free day (clubs user hasn't joined)
+  const freeDaySuggestions = freeDays.map(day => {
+    const m = meetings.find(x => !joinedClubIds.has(x.club_id) && sameDay(new Date(x.date), day));
+    if (!m) return null;
+    const club = clubs.find(c => c.id === m.club_id);
+    return club ? { club, meeting: m, day } : null;
+  }).filter(Boolean) as { club: Club; meeting: Meeting; day: Date }[];
 
   function checkGoing(m: Meeting): boolean {
     if (rsvpOverrides.has(m.id)) return rsvpOverrides.get(m.id)!;
@@ -143,9 +142,10 @@ export default function SchedulePage() {
 
         {/* Decorative bg circles */}
         <div className="absolute pointer-events-none" style={{ inset: 0, overflow: "hidden" }}>
-          <div className="absolute pointer-events-none -right-20 -top-20 h-80 w-80 rounded-full border-[40px] border-white/15" />
-          <div className="absolute pointer-events-none right-16 -bottom-28 h-64 w-64 rounded-full border-[32px] border-white/10" />
-          <div className="absolute pointer-events-none -right-10 -top-32 h-[480px] w-[480px] rounded-full border-[28px] border-white/6" />
+          <div className="absolute pointer-events-none -right-16 -top-8 h-60 w-60 rounded-full border-[40px] border-white/15" />
+          <div className="absolute pointer-events-none right-36 top-2 h-32 w-32 rounded-full border-[30px] border-white/12" />
+          <div className="absolute pointer-events-none right-8 -bottom-20 h-52 w-52 rounded-full border-[36px] border-white/8" />
+          <div className="absolute pointer-events-none -right-20 -top-36 h-[460px] w-[460px] rounded-full border-[26px] border-white/5" />
         </div>
 
         <div className="relative flex items-end justify-between gap-4 mb-6">
@@ -326,62 +326,26 @@ export default function SchedulePage() {
             </div>
           </div>
 
-          {/* Mini week calendar with colored dots */}
-          <div className="rounded-2xl bg-white overflow-hidden">
-            <div className="px-4 pt-4 pb-3 border-b border-gray-100">
-              <h2 className="font-bold text-gray-900 text-sm">Days at a glance</h2>
-            </div>
-            <div className="grid grid-cols-7 py-3 px-1">
-              {weekDays.map((day) => {
-                const dayMeetings = meetingsOn(day);
-                const isToday = sameDay(day, new Date());
-                const clubsOnDay = dayMeetings
-                  .map((m) => clubs.find((c) => c.id === m.club_id))
-                  .filter(Boolean) as typeof clubs;
-                return (
-                  <div key={day.toISOString()} className="flex flex-col items-center gap-1 py-1">
-                    <span className="text-[9px] font-bold uppercase tracking-wide"
-                      style={{ color: isToday ? SCHEDULE_COLOR : "#9CA3AF" }}>
-                      {day.toLocaleDateString("en-US", { weekday: "short" })}
-                    </span>
-                    <div
-                      className="flex h-6 w-6 items-center justify-center rounded-full text-xs font-black"
-                      style={isToday
-                        ? { backgroundColor: SCHEDULE_COLOR, color: "white" }
-                        : { color: "#1F2937" }
-                      }>
-                      {day.getDate()}
-                    </div>
-                    <div className="flex flex-col items-center gap-[3px] min-h-[18px]">
-                      {clubsOnDay.slice(0, 3).map((club, i) => (
-                        <div key={i} className="h-[5px] w-[5px] rounded-full"
-                          style={{ backgroundColor: `#${club.color_hex}` }} />
-                      ))}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
           {freeDaySuggestions.length > 0 && (
-            <div className="rounded-2xl bg-white p-4">
-              <p className="font-bold text-gray-900 text-sm mb-1">Got free time?</p>
-              <p className="text-xs text-gray-400 mb-3">These clubs meet on your open days.</p>
-              <div className="space-y-2">
-                {freeDaySuggestions.map(({ club, meeting }) => {
-                  const d = new Date(meeting.date);
-                  const dayAbbr = d.toLocaleDateString("en-US", { weekday: "short" });
+            <div className="rounded-2xl bg-white overflow-hidden">
+              <div className="px-4 pt-4 pb-3 border-b border-gray-100">
+                <p className="font-bold text-gray-900 text-sm">Got free time?</p>
+                <p className="text-xs text-gray-400 mt-0.5">Clubs meeting on your open days.</p>
+              </div>
+              <div className="divide-y divide-gray-50">
+                {freeDaySuggestions.map(({ club, day }) => {
+                  const dayName = day.toLocaleDateString("en-US", { weekday: "long" });
+                  const dayDate = day.toLocaleDateString("en-US", { month: "short", day: "numeric" });
                   return (
-                    <Link key={club.id} href={`/clubs/${club.id}`}>
-                      <div className="flex items-center gap-3 rounded-xl p-2.5 hover:bg-gray-50 transition-colors">
-                        <div className="h-8 w-8 shrink-0 rounded-xl flex items-center justify-center"
-                          style={{ backgroundColor: `#${club.color_hex}20` }}>
-                          <div className="h-3 w-3 rounded-full" style={{ backgroundColor: `#${club.color_hex}` }} />
+                    <Link key={`${club.id}-${day.toISOString()}`} href={`/clubs/${club.id}`} className="block">
+                      <div className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors">
+                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl"
+                          style={{ backgroundColor: `#${club.color_hex}` }}>
+                          <div className="h-3.5 w-3.5 rounded-full bg-white/40" />
                         </div>
                         <div className="min-w-0 flex-1">
-                          <p className="text-xs font-semibold text-gray-800 truncate">{club.name}</p>
-                          <p className="text-[10px] text-gray-400">Meets {dayAbbr}</p>
+                          <p className="text-xs font-bold text-gray-900 truncate">{club.name}</p>
+                          <p className="text-[10px] text-gray-400 mt-0.5">{dayName} · {dayDate}</p>
                         </div>
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#D1D5DB" strokeWidth="2.5">
                           <path d="m9 18 6-6-6-6" />

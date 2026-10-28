@@ -66,11 +66,12 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ id:
   return (
     <div className="min-h-dvh" style={{ background: "var(--background)" }}>
       {/* Crescent header */}
-      <div className="crescent-header relative overflow-hidden px-5 pt-12 pb-20 text-white" style={{ backgroundColor: `#${club.color_hex}` }}>
+      <div className="crescent-header relative px-5 pt-12 pb-20 text-white" style={{ backgroundColor: `#${club.color_hex}` }}>
         {/* Decorative rings */}
-        <div className="pointer-events-none absolute -right-20 -top-20 h-80 w-80 rounded-full border-[40px] border-white/15" />
-        <div className="pointer-events-none absolute right-16 -bottom-28 h-64 w-64 rounded-full border-[32px] border-white/10" />
-        <div className="pointer-events-none absolute -right-10 -top-32 h-[480px] w-[480px] rounded-full border-[28px] border-white/6" />
+        <div className="pointer-events-none absolute -right-12 -top-16 h-72 w-72 rounded-full border-[40px] border-white/15" />
+        <div className="pointer-events-none absolute right-28 top-4 h-44 w-44 rounded-full border-[28px] border-white/10" />
+        <div className="pointer-events-none absolute right-4 -bottom-24 h-56 w-56 rounded-full border-[36px] border-white/8" />
+        <div className="pointer-events-none absolute -right-24 -top-40 h-[500px] w-[500px] rounded-full border-[24px] border-white/5" />
         <div className="relative flex items-start gap-3">
           <Link href="/clubs" className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/20">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
@@ -95,7 +96,7 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ id:
         </div>
       </div>
 
-      <div className="-mt-10 space-y-5 px-5 pb-8">
+      <div className="-mt-10 relative z-10 space-y-5 px-5 pb-8">
         {/* Join/Leave */}
         {!isSuperAdmin && <JoinLeaveButton club={club} userId={user.id} role={role} />}
 
