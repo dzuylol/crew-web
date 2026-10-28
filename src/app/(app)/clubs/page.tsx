@@ -228,7 +228,7 @@ function JoinedView({ joinedClubs, exploreClubs, userId, nextMeetingFor, latestA
             </button>
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {joinedClubs.map((club) => (
               <Link key={club.id} href={`/clubs/${club.id}`}>
                 <JoinedClubCard
@@ -247,8 +247,11 @@ function JoinedView({ joinedClubs, exploreClubs, userId, nextMeetingFor, latestA
       {exploreClubs.length > 0 && (
         <div>
           <div className="flex items-center justify-between mb-3">
-            <h2 className="font-bold text-gray-900">Discover</h2>
-            <button onClick={onExplore} className="text-xs font-semibold" style={{ color: CLUBS_COLOR }}>
+            <div>
+              <h2 className="font-bold text-gray-900">Discover</h2>
+              <p className="text-xs text-gray-400">Clubs you haven&apos;t joined yet</p>
+            </div>
+            <button onClick={onExplore} className="text-sm font-semibold" style={{ color: CLUBS_COLOR }}>
               See all clubs →
             </button>
           </div>
