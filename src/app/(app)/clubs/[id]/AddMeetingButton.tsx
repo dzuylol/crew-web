@@ -21,7 +21,7 @@ export default function AddMeetingButton({ clubId, colorHex }: { clubId: string;
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    if (!title.trim() || !date) return;
+    if (!title.trim() || !date || !block.trim() || !room.trim()) return;
     setSaving(true);
     const supabase = createClient();
     await supabase.from("meetings").insert({
@@ -52,16 +52,16 @@ export default function AddMeetingButton({ clubId, colorHex }: { clubId: string;
     <form onSubmit={submit} className="card-shadow rounded-[18px] bg-white p-4 space-y-3">
       <p className="font-semibold text-gray-900">New meeting</p>
       <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Title *" required className={inp} />
-      <input type="datetime-local" value={date} onChange={(e) => setDate(e.target.value)} required className={inp} />
+      <input type="date" value={date} onChange={(e) => setDate(e.target.value)} required className={inp} />
       <div className="flex gap-2">
-        <input value={block} onChange={(e) => setBlock(e.target.value)} placeholder="Block (e.g. B2)" className={inp + " flex-1"} />
-        <input value={room} onChange={(e) => setRoom(e.target.value)} placeholder="Room" className={inp + " flex-1"} />
+        <input value={block} onChange={(e) => setBlock(e.target.value)} placeholder="Block (e.g. B2)" required className={inp + " flex-1"} />
+        <input value={room} onChange={(e) => setRoom(e.target.value)} placeholder="Room" required className={inp + " flex-1"} />
       </div>
       <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Description (optional)"
         rows={2} className={inp + " resize-none"} />
       <div className="flex gap-2">
         <button type="button" onClick={reset} className="flex-1 rounded-full bg-gray-100 py-2.5 text-sm font-semibold text-gray-600">Cancel</button>
-        <button type="submit" disabled={saving || !title.trim() || !date}
+        <button type="submit" disabled={saving || !title.trim() || !date || !block.trim() || !room.trim()}
           className="flex-1 rounded-full py-2.5 text-sm font-semibold text-white disabled:opacity-50"
           style={{ backgroundColor: `#${colorHex}` }}>
           {saving ? "Saving…" : "Add meeting"}

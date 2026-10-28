@@ -11,7 +11,7 @@ const inp = "w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm outlin
 export default function EditMeetingButton({ meeting, colorHex }: { meeting: Meeting; colorHex: string }) {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState(meeting.title);
-  const [date, setDate] = useState(meeting.date.slice(0, 16));
+  const [date, setDate] = useState(meeting.date.slice(0, 10));
   const [block, setBlock] = useState(meeting.block ?? "");
   const [room, setRoom] = useState(meeting.room ?? "");
   const [description, setDescription] = useState(meeting.description ?? "");
@@ -51,7 +51,7 @@ export default function EditMeetingButton({ meeting, colorHex }: { meeting: Meet
     <form onSubmit={submit} className="mt-3 border-t border-gray-100 pt-3 space-y-2.5">
       <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Edit meeting</p>
       <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Title *" required className={inp} />
-      <input type="datetime-local" value={date} onChange={(e) => setDate(e.target.value)} required className={inp} />
+      <input type="date" value={date} onChange={(e) => setDate(e.target.value)} required className={inp} />
       <div className="flex gap-2">
         <input value={block} onChange={(e) => setBlock(e.target.value)} placeholder="Block" className={inp + " flex-1"} />
         <input value={room} onChange={(e) => setRoom(e.target.value)} placeholder="Room" className={inp + " flex-1"} />

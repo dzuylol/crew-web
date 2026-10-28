@@ -1,10 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import Image from "next/image";
 import { Home, CalendarDays, Users, Settings, LogIn } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
 import type { AppUser } from "@/types";
 import { stableColor, displayName } from "@/types";
 
@@ -16,14 +15,6 @@ const NAV = [
 
 export default function Sidebar({ profile }: { profile: AppUser | null }) {
   const pathname = usePathname();
-  const router = useRouter();
-
-  async function signOut() {
-    const supabase = createClient();
-    await supabase.auth.signOut();
-    router.push("/login");
-    router.refresh();
-  }
 
   const name = profile ? displayName(profile) : null;
   const initials = name ? name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2) : null;
@@ -64,29 +55,30 @@ export default function Sidebar({ profile }: { profile: AppUser | null }) {
       {/* Bottom */}
       <div className="border-t border-gray-100 p-3 space-y-1">
         <Link
-          href="/profile"
-          className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors"
+          href="/settings"
+          className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-colors hover:bg-gray-50"
+          style={{ color: pathname === "/settings" ? "#7A1F2E" : "#6B7280" }}
         >
           <Settings size={17} />
           Settings
         </Link>
 
         {profile ? (
-          <button
-            onClick={signOut}
+          <Link
+            href="/profile"
             className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 transition-colors hover:bg-gray-50"
           >
             <div
               className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
-              style={{ backgroundColor: stableColor(profile.id) }}
+              style={{ backgroundColor: profile.avatar_color_hex ? `#${profile.avatar_color_hex}` : stableColor(profile.id) }}
             >
               {initials}
             </div>
             <div className="min-w-0 text-left">
               <p className="truncate text-sm font-semibold text-gray-900">{name}</p>
-              <p className="text-xs text-gray-400">Sign out</p>
+              <p className="text-xs text-gray-400">View profile</p>
             </div>
-          </button>
+          </Link>
         ) : (
           <Link
             href="/login"

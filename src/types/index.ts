@@ -41,6 +41,7 @@ export interface AppUser {
   last_name: string;
   email: string;
   is_super_admin: boolean;
+  avatar_color_hex: string | null;
   created_at: string;
 }
 

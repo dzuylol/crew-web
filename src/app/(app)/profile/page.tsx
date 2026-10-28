@@ -5,9 +5,13 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import type { AppUser } from "@/types";
-import { stableColor } from "@/types";
+import { stableColor, PALETTE_HEXES } from "@/types";
 
 const HOME_COLOR = "#7A1F2E";
+
+function avatarColor(user: AppUser) {
+  return user.avatar_color_hex ? `#${user.avatar_color_hex}` : stableColor(user.id);
+}
 
 export default function ProfilePage() {
   const [user, setUser] = useState<AppUser | null>(null);
@@ -44,15 +48,16 @@ export default function ProfilePage() {
     setEditMode(false);
   }
 
-  async function signOut() {
+  async function pickColor(hex: string) {
+    if (!user) return;
     const supabase = createClient();
-    await supabase.auth.signOut();
-    router.push("/login");
+    await supabase.from("users").update({ avatar_color_hex: hex }).eq("id", user.id);
+    setUser({ ...user, avatar_color_hex: hex });
   }
 
   const displayName = user ? `${user.first_name} ${user.last_name}`.trim() : "";
-  const initial = displayName[0]?.toUpperCase() ?? "?";
-  const avatarColor = user ? stableColor(user.id) : HOME_COLOR;
+  const initials = displayName.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2) || "?";
+  const color = user ? avatarColor(user) : HOME_COLOR;
 
   return (
     <div className="min-h-dvh" style={{ background: "var(--background)" }}>
@@ -69,42 +74,71 @@ export default function ProfilePage() {
       </div>
 
       <div className="-mt-10 space-y-4 px-5 pb-8">
-        {/* Avatar + name card */}
-        <div className="card-shadow rounded-[20px] p-5 text-center" style={{ background: "var(--card)" }}>
-          <div
-            className="mx-auto flex h-20 w-20 items-center justify-center rounded-full text-3xl font-bold text-white"
-            style={{ backgroundColor: avatarColor }}
-          >
-            {initial}
+        {/* Avatar card */}
+        <div className="card-shadow rounded-[20px] p-5" style={{ background: "var(--card)" }}>
+          <div className="flex items-center gap-4 mb-5">
+            <div
+              className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full text-2xl font-bold text-white"
+              style={{ backgroundColor: color }}
+            >
+              {initials}
+            </div>
+            <div>
+              <p className="text-lg font-bold text-gray-900">{displayName || "—"}</p>
+              <p className="text-sm text-gray-400">{email}</p>
+            </div>
           </div>
 
+          {/* Color picker */}
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">Circle color</p>
+            <div className="flex flex-wrap gap-2">
+              {PALETTE_HEXES.map((hex) => {
+                const isSelected = user?.avatar_color_hex === hex;
+                return (
+                  <button
+                    key={hex}
+                    onClick={() => pickColor(hex)}
+                    className="h-8 w-8 rounded-full transition-transform hover:scale-110"
+                    style={{
+                      backgroundColor: `#${hex}`,
+                      outline: isSelected ? `3px solid #${hex}` : "none",
+                      outlineOffset: "2px",
+                    }}
+                  />
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* Edit name card */}
+        <div className="card-shadow rounded-[20px] p-5" style={{ background: "var(--card)" }}>
+          <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">Name</p>
           {editMode ? (
-            <div className="mt-4 space-y-3">
+            <div className="space-y-3">
               <input
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
                 placeholder="First name"
-                className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm outline-none focus:border-[#7A1F2E]"
-                style={{ background: "var(--background)", color: "var(--foreground)" }}
+                className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm outline-none focus:border-[#7A1F2E] bg-white text-gray-900"
               />
               <input
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
                 placeholder="Last name"
-                className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm outline-none focus:border-[#7A1F2E]"
-                style={{ background: "var(--background)", color: "var(--foreground)" }}
+                className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm outline-none focus:border-[#7A1F2E] bg-white text-gray-900"
               />
               <div className="flex gap-2">
                 <button
                   onClick={() => setEditMode(false)}
-                  className="flex-1 rounded-full py-2 text-sm font-semibold"
-                  style={{ background: "var(--pill)", color: "var(--foreground)" }}
+                  className="flex-1 rounded-full bg-gray-100 py-2 text-sm font-semibold text-gray-600"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={saveName}
-                  disabled={saving}
+                  disabled={saving || !firstName.trim()}
                   className="flex-1 rounded-full py-2 text-sm font-semibold text-white disabled:opacity-50"
                   style={{ backgroundColor: HOME_COLOR }}
                 >
@@ -113,39 +147,18 @@ export default function ProfilePage() {
               </div>
             </div>
           ) : (
-            <>
-              <p className="mt-3 text-xl font-bold" style={{ color: "var(--foreground)" }}>
-                {displayName || "—"}
-              </p>
-              <p className="mt-0.5 text-sm" style={{ color: "var(--foreground)", opacity: 0.5 }}>{email}</p>
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-gray-700">{displayName || "—"}</span>
               <button
                 onClick={() => setEditMode(true)}
-                className="mt-3 rounded-full px-4 py-1.5 text-xs font-semibold"
-                style={{ background: "var(--pill)", color: "var(--foreground)" }}
+                className="rounded-full bg-gray-100 px-4 py-1.5 text-xs font-semibold text-gray-600"
               >
-                Edit name
+                Edit
               </button>
-            </>
+            </div>
           )}
-        </div>
-
-        {/* Account */}
-        <div className="card-shadow overflow-hidden rounded-[20px]" style={{ background: "var(--card)" }}>
-          <p className="px-5 pt-4 pb-2 text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--foreground)", opacity: 0.4 }}>
-            Account
-          </p>
-          <button
-            onClick={signOut}
-            className="flex w-full items-center justify-between px-5 py-4 text-sm font-semibold text-red-500"
-          >
-            Sign out
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <path d="m9 18 6-6-6-6" />
-            </svg>
-          </button>
         </div>
       </div>
     </div>
   );
 }
-

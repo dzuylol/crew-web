@@ -48,17 +48,11 @@ export default function JoinLeaveButton({ club, userId, role }: {
   }
 
   return (
-    <div className="flex gap-3">
-      <button
-        className="flex-1 rounded-full py-2.5 text-sm font-semibold"
-        style={{ backgroundColor: `#${club.color_hex}18`, color: `#${club.color_hex}` }}
-      >
-        Invite a friend
-      </button>
+    <div className="flex justify-end">
       <button
         onClick={leave}
         disabled={loading}
-        className="flex-1 rounded-full bg-red-50 py-2.5 text-sm font-semibold text-red-500 disabled:opacity-60"
+        className="rounded-full bg-red-50 px-5 py-2 text-sm font-semibold text-red-500 disabled:opacity-60"
       >
         {loading ? "Leaving…" : "Leave Club"}
       </button>
