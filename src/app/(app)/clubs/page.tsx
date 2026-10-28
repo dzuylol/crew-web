@@ -378,13 +378,13 @@ function DiscoverTile({ club, nextMeeting, onJoin }: {
       <div className="pointer-events-none absolute -right-2 -bottom-2 h-16 w-16 rounded-full border border-white/15" />
 
       <ClubIcon colorHex={club.color_hex} iconName={club.icon_name} size={36} className="mb-3" />
-      <p className="font-bold text-sm text-gray-900 leading-tight">{club.name}</p>
+      <p className="font-bold text-sm text-white leading-tight">{club.name}</p>
       {locationStr && (
-        <p className="text-xs text-gray-700/80 mt-0.5 line-clamp-1">{locationStr}</p>
+        <p className="text-xs text-white/70 mt-0.5 line-clamp-1">{locationStr}</p>
       )}
       <button
         onClick={(e) => { e.preventDefault(); onJoin(); }}
-        className="mt-3 w-full rounded-full bg-white/30 py-1.5 text-xs font-bold text-gray-900 hover:bg-white/50 transition-colors">
+        className="mt-3 w-full rounded-full bg-white/30 py-1.5 text-xs font-bold text-white hover:bg-white/50 transition-colors">
         + Join
       </button>
     </div>
