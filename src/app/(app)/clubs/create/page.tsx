@@ -106,23 +106,23 @@ export default function CreateClubPage() {
 
           <div>
             <p className="mb-3 text-xs font-semibold text-gray-500">Club icon</p>
-            <div className="grid grid-cols-6 gap-2">
+            <div className="flex flex-wrap gap-2.5">
               {CLUB_ICONS.map((icon) => {
                 const selected = iconName === icon;
                 return (
                   <button key={icon} type="button" onClick={() => setIconName(icon)}
-                    className="flex items-center justify-center rounded-xl transition-transform"
+                    className="transition-transform"
                     style={{
-                      aspectRatio: "1",
-                      transform: selected ? "scale(1.1)" : undefined,
+                      transform: selected ? "scale(1.12)" : undefined,
                       outline: selected ? `2px solid #${PALETTE_HEXES[colorIdx]}` : undefined,
-                      outlineOffset: "2px",
+                      outlineOffset: "3px",
+                      borderRadius: 14,
                     }}
                   >
                     <ClubIcon
-                      colorHex={selected ? PALETTE_HEXES[colorIdx] : "E5E7EB"}
+                      colorHex={selected ? PALETTE_HEXES[colorIdx] : "D1D5DB"}
                       iconName={icon}
-                      size={48}
+                      size={56}
                     />
                   </button>
                 );

@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
+import Script from "next/script";
 
-// Inline script runs before paint to avoid flash of wrong theme
 const themeScript = `
 (function() {
   try {
@@ -15,7 +14,7 @@ const themeScript = `
 export default function ThemeProvider({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      <Script id="theme-init" strategy="beforeInteractive" dangerouslySetInnerHTML={{ __html: themeScript }} />
       {children}
     </>
   );
