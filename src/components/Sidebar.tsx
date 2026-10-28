@@ -22,14 +22,14 @@ export default function Sidebar({ profile }: { profile: AppUser | null }) {
   return (
     <aside className="hidden md:flex fixed left-0 top-0 h-dvh w-[220px] flex-col border-r border-gray-100 bg-white z-40">
       {/* Logo */}
-      <div className="flex items-center gap-3 px-4 py-5 border-b border-gray-100">
+      <Link href="/" className="flex items-center gap-3 px-4 py-5 border-b border-gray-100 hover:bg-gray-50 transition-colors">
         <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] bg-gray-900">
           <Image src="/paw-logo.png" alt="" width={38} height={38} />
         </div>
         <span className="text-[20px] font-bold tracking-tight text-gray-900" style={{ fontFamily: "var(--font-inter), 'Inter', sans-serif" }}>
           Crew
         </span>
-      </div>
+      </Link>
 
       {/* Nav */}
       <nav className="flex-1 py-4 px-3 space-y-1">

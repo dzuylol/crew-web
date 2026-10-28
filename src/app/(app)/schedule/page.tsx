@@ -138,9 +138,18 @@ export default function SchedulePage() {
   return (
     <div className="min-h-dvh bg-[#F2F2F7]">
       {/* Header */}
-      <div className="px-6 pt-8 pb-10 md:px-8 rounded-b-[28px]"
+      <div className="relative overflow-hidden px-6 pt-8 pb-10 md:px-8 rounded-b-[28px]"
         style={{ backgroundColor: SCHEDULE_COLOR, boxShadow: "0 8px 24px rgba(59,94,165,0.35), 0 2px 8px rgba(0,0,0,0.15)" }}>
-        <div className="flex items-end justify-between gap-4 mb-6">
+
+        {/* Decorative bg circles */}
+        <div className="absolute pointer-events-none" style={{ inset: 0, overflow: "hidden" }}>
+          <div className="absolute rounded-full" style={{ width: 280, height: 280, top: -90, right: -40, border: "3px solid rgba(255,255,255,0.10)" }} />
+          <div className="absolute rounded-full" style={{ width: 380, height: 380, top: -110, right: 60, border: "3px solid rgba(255,255,255,0.07)" }} />
+          <div className="absolute rounded-full" style={{ width: 180, height: 180, top: 10, right: -10, border: "2px solid rgba(255,255,255,0.08)" }} />
+          <div className="absolute rounded-full" style={{ width: 480, height: 480, top: -180, right: -60, border: "2px solid rgba(255,255,255,0.04)" }} />
+        </div>
+
+        <div className="relative flex items-end justify-between gap-4 mb-6">
           <div>
             <h1 className="text-3xl font-black text-white md:text-4xl">My Schedule</h1>
             <p className="mt-1 text-sm text-white/70">
@@ -173,31 +182,45 @@ export default function SchedulePage() {
           </div>
         </div>
 
-        {/* Day strip */}
-        <div className="grid grid-cols-7 gap-1">
+        {/* Day strip — glassmorphism cards */}
+        <div className="relative grid grid-cols-7 gap-1.5">
           {weekDays.map((day) => {
-            const hasMeeting = meetingsOn(day).length > 0;
+            const dayMeetings = meetingsOn(day);
+            const clubsOnDay = dayMeetings.map(m => clubs.find(c => c.id === m.club_id)).filter(Boolean) as typeof clubs;
             const isToday = sameDay(day, new Date());
             return (
               <div
                 key={day.toISOString()}
-                className="flex flex-col items-center justify-center gap-0.5 rounded-xl py-2.5 h-[68px]"
-                style={isToday ? { backgroundColor: "rgba(255,255,255,0.2)" } : undefined}>
-                <span className="text-[10px] font-bold uppercase tracking-wider"
-                  style={{ color: isToday ? "white" : "rgba(255,255,255,0.5)" }}>
+                className="flex flex-col items-center justify-center gap-1 rounded-2xl py-3 h-[84px]"
+                style={isToday ? {
+                  background: "rgba(255,255,255,0.95)",
+                  boxShadow: "0 4px 20px rgba(0,0,0,0.18), 0 1px 6px rgba(0,0,0,0.12)",
+                } : {
+                  background: "rgba(255,255,255,0.10)",
+                  backdropFilter: "blur(10px)",
+                  border: "1.5px solid rgba(255,255,255,0.18)",
+                }}>
+                <span className="text-[9px] font-bold uppercase tracking-wider"
+                  style={{ color: isToday ? SCHEDULE_COLOR : "rgba(255,255,255,0.6)" }}>
                   {day.toLocaleDateString("en-US", { weekday: "short" })}
                 </span>
-                <span className="text-base font-black leading-none"
-                  style={{ color: isToday ? "white" : "rgba(255,255,255,0.7)" }}>
+                <span className="text-2xl font-black leading-none"
+                  style={{ color: isToday ? SCHEDULE_COLOR : "white" }}>
                   {day.getDate()}
                 </span>
                 {isToday ? (
-                  <span className="text-[9px] font-bold uppercase tracking-wider text-white/60">
+                  <span className="text-[8px] font-bold uppercase tracking-wider" style={{ color: SCHEDULE_COLOR, opacity: 0.55 }}>
                     TODAY
                   </span>
+                ) : clubsOnDay.length > 0 ? (
+                  <div className="flex gap-[3px] items-center mt-0.5">
+                    {clubsOnDay.slice(0, 3).map((club, i) => (
+                      <div key={i} className="h-[7px] w-[7px] rounded-full"
+                        style={{ backgroundColor: `#${club!.color_hex}`, boxShadow: `0 0 4px #${club!.color_hex}88` }} />
+                    ))}
+                  </div>
                 ) : (
-                  <div className="h-1 w-1 rounded-full"
-                    style={{ backgroundColor: hasMeeting ? "white" : "transparent" }} />
+                  <div className="h-[7px]" />
                 )}
               </div>
             );
@@ -217,7 +240,7 @@ export default function SchedulePage() {
               </Link>
             )}
           </div>
-          <div className="space-y-4">
+          <div className="space-y-6">
             {groups.map((group, gi) => {
               if (!group.hasMeetings) {
                 const first = group.days[0];
@@ -239,7 +262,7 @@ export default function SchedulePage() {
                     <span className="text-[10px] font-bold text-gray-400 tracking-wider">{dayAbbr}</span>
                     <span className="text-2xl font-black text-gray-800 leading-none">{dayNum}</span>
                   </div>
-                  <div className="flex-1 min-w-0 space-y-3">
+                  <div className="flex-1 min-w-0 space-y-[10px]">
                     {dayMeetings.map((m) => {
                       const club = clubs.find((c) => c.id === m.club_id);
                       if (!club) return null;
@@ -304,20 +327,67 @@ export default function SchedulePage() {
             </div>
           </div>
 
+          {/* Mini week calendar with colored dots */}
+          <div className="rounded-2xl bg-white overflow-hidden">
+            <div className="px-4 pt-4 pb-3 border-b border-gray-100">
+              <h2 className="font-bold text-gray-900 text-sm">Days at a glance</h2>
+            </div>
+            <div className="grid grid-cols-7 py-3 px-1">
+              {weekDays.map((day) => {
+                const dayMeetings = meetingsOn(day);
+                const isToday = sameDay(day, new Date());
+                const clubsOnDay = dayMeetings
+                  .map((m) => clubs.find((c) => c.id === m.club_id))
+                  .filter(Boolean) as typeof clubs;
+                return (
+                  <div key={day.toISOString()} className="flex flex-col items-center gap-1 py-1">
+                    <span className="text-[9px] font-bold uppercase tracking-wide"
+                      style={{ color: isToday ? SCHEDULE_COLOR : "#9CA3AF" }}>
+                      {day.toLocaleDateString("en-US", { weekday: "short" })}
+                    </span>
+                    <div
+                      className="flex h-6 w-6 items-center justify-center rounded-full text-xs font-black"
+                      style={isToday
+                        ? { backgroundColor: SCHEDULE_COLOR, color: "white" }
+                        : { color: "#1F2937" }
+                      }>
+                      {day.getDate()}
+                    </div>
+                    <div className="flex flex-col items-center gap-[3px] min-h-[18px]">
+                      {clubsOnDay.slice(0, 3).map((club, i) => (
+                        <div key={i} className="h-[5px] w-[5px] rounded-full"
+                          style={{ backgroundColor: `#${club.color_hex}` }} />
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
           {freeDaySuggestions.length > 0 && (
             <div className="rounded-2xl bg-white p-4">
               <p className="font-bold text-gray-900 text-sm mb-1">Got free time?</p>
-              <p className="text-xs text-gray-400 mb-3">These clubs meet on days you&apos;re open.</p>
-              <div className="flex flex-wrap gap-2">
+              <p className="text-xs text-gray-400 mb-3">These clubs meet on your open days.</p>
+              <div className="space-y-2">
                 {freeDaySuggestions.map(({ club, meeting }) => {
                   const d = new Date(meeting.date);
                   const dayAbbr = d.toLocaleDateString("en-US", { weekday: "short" });
                   return (
                     <Link key={club.id} href={`/clubs/${club.id}`}>
-                      <span className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-gray-200 transition-colors">
-                        <span className="h-2 w-2 rounded-full" style={{ backgroundColor: `#${club.color_hex}` }} />
-                        {club.name} · {dayAbbr}
-                      </span>
+                      <div className="flex items-center gap-3 rounded-xl p-2.5 hover:bg-gray-50 transition-colors">
+                        <div className="h-8 w-8 shrink-0 rounded-xl flex items-center justify-center"
+                          style={{ backgroundColor: `#${club.color_hex}20` }}>
+                          <div className="h-3 w-3 rounded-full" style={{ backgroundColor: `#${club.color_hex}` }} />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-xs font-semibold text-gray-800 truncate">{club.name}</p>
+                          <p className="text-[10px] text-gray-400">Meets {dayAbbr}</p>
+                        </div>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#D1D5DB" strokeWidth="2.5">
+                          <path d="m9 18 6-6-6-6" />
+                        </svg>
+                      </div>
                     </Link>
                   );
                 })}
