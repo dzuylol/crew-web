@@ -16,8 +16,7 @@ export default function JoinLeaveButton({ club, userId, role }: {
   async function join() {
     setLoading(true);
     const supabase = createClient();
-    const newIds = [...new Set([...club.member_ids, userId])];
-    await supabase.from("clubs").update({ member_ids: newIds }).eq("id", club.id);
+    await supabase.rpc("join_club", { club_id: club.id });
     router.refresh();
     setLoading(false);
   }
@@ -26,8 +25,7 @@ export default function JoinLeaveButton({ club, userId, role }: {
     if (!confirm(`Leave ${club.name}?`)) return;
     setLoading(true);
     const supabase = createClient();
-    const newIds = club.member_ids.filter((id) => id !== userId);
-    await supabase.from("clubs").update({ member_ids: newIds }).eq("id", club.id);
+    await supabase.rpc("leave_club", { club_id: club.id });
     router.refresh();
     setLoading(false);
   }

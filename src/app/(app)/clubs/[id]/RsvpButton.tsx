@@ -16,9 +16,8 @@ export default function RsvpButton({ meetingId, initialIds, userId, colorHex }: 
   async function toggle() {
     setLoading(true);
     const supabase = createClient();
-    const newIds = isGoing ? ids.filter((id) => id !== userId) : [...ids, userId];
-    await supabase.from("meetings").update({ rsvp_user_ids: newIds }).eq("id", meetingId);
-    setIds(newIds);
+    await supabase.rpc("toggle_rsvp", { meeting_id: meetingId });
+    setIds(isGoing ? ids.filter((id) => id !== userId) : [...ids, userId]);
     setLoading(false);
   }
 

@@ -45,8 +45,8 @@ export default function ClubIcon({ colorHex, iconName = "users", size = 40, clas
 
   return (
     <div
-      className={`flex items-center justify-center rounded-2xl flex-shrink-0 ${className}`}
-      style={{ width: size, height: size, backgroundColor: `#${colorHex}` }}
+      className={`flex items-center justify-center rounded-2xl flex-shrink-0 shadow-sm ${className}`}
+      style={{ width: size, height: size, backgroundColor: `rgba(255,255,255,0.22)`, border: "1.5px solid rgba(255,255,255,0.35)" }}
     >
       <Icon size={iconSize} color="white" strokeWidth={2} />
     </div>

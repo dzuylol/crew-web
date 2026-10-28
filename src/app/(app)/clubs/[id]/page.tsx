@@ -8,6 +8,9 @@ import RsvpButton from "./RsvpButton";
 import AddMeetingButton from "./AddMeetingButton";
 import AddAnnouncementButton from "./AddAnnouncementButton";
 import RosterSection from "./RosterSection";
+import DeleteAnnouncementButton from "./DeleteAnnouncementButton";
+import DeleteMeetingButton from "./DeleteMeetingButton";
+import DeleteClubButton from "./DeleteClubButton";
 
 export default async function ClubDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -70,6 +73,11 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ id:
               <Pill>{club.category}</Pill>
               {role && <Pill>{roleLabel} ✓</Pill>}
             </div>
+            {isSuperAdmin && (
+              <div className="mt-3">
+                <DeleteClubButton clubId={club.id} clubName={club.name} />
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -166,7 +174,10 @@ function MeetingCard({ meeting, club, userId, canDelete, past }: {
       <div className="min-w-0 flex-1">
         <div className="flex items-center justify-between gap-2">
           <p className="font-semibold text-gray-900">{meeting.title}</p>
-          {!past && <span className="shrink-0 text-xs text-gray-400">{relativeDayLabel(meeting.date)}</span>}
+          <div className="flex items-center gap-1 shrink-0">
+            {!past && <span className="text-xs text-gray-400">{relativeDayLabel(meeting.date)}</span>}
+            {canDelete && <DeleteMeetingButton meetingId={meeting.id} />}
+          </div>
         </div>
         <p className="mt-0.5 text-xs text-gray-500">{meeting.block}{meeting.room ? ` · Room ${meeting.room}` : ""}</p>
         {meeting.description && <p className="mt-1 text-sm text-gray-600 line-clamp-2">{meeting.description}</p>}
@@ -192,7 +203,10 @@ function AnnouncementCard({ announcement, club, canDelete }: {
     <div className="card-shadow rounded-[16px] bg-white p-4">
       <div className="flex items-start justify-between gap-2">
         <p className="font-semibold text-gray-900">{announcement.title}</p>
-        <span className="shrink-0 text-xs text-gray-400">{dateStr}</span>
+        <div className="flex items-center gap-1 shrink-0">
+          <span className="text-xs text-gray-400">{dateStr}</span>
+          {canDelete && <DeleteAnnouncementButton announcementId={announcement.id} />}
+        </div>
       </div>
       {announcement.body && <p className="mt-1 text-sm text-gray-500">{announcement.body}</p>}
     </div>

@@ -70,11 +70,8 @@ export default function ClubsPage() {
   async function joinClub(clubId: string) {
     if (!userId) { window.location.href = "/login"; return; }
     const supabase = createClient();
-    const club = clubs.find((c) => c.id === clubId);
-    if (!club) return;
-    const newMemberIds = [...new Set([...club.member_ids, userId])];
-    await supabase.from("clubs").update({ member_ids: newMemberIds }).eq("id", clubId);
-    setClubs((prev) => prev.map((c) => (c.id === clubId ? { ...c, member_ids: newMemberIds } : c)));
+    await supabase.rpc("join_club", { club_id: clubId });
+    setClubs((prev) => prev.map((c) => (c.id === clubId ? { ...c, member_ids: [...c.member_ids, userId] } : c)));
   }
 
   // "Meeting soon" panel: upcoming meetings from clubs user hasn't joined
@@ -89,11 +86,8 @@ export default function ClubsPage() {
       {/* Header */}
       <div className="relative overflow-hidden rounded-b-[28px] px-6 pt-8 pb-10 md:px-8" style={{ backgroundColor: CLUBS_COLOR }}>
         {/* Decorative rings */}
-        <div className="pointer-events-none absolute -right-16 -top-16 h-72 w-72 rounded-full border-[6px] border-white/20" />
-        <div className="pointer-events-none absolute -right-6 top-8 h-96 w-96 rounded-full border-[5px] border-white/15" />
-        <div className="pointer-events-none absolute right-24 -bottom-24 h-80 w-80 rounded-full border-[6px] border-white/20" />
-        <div className="pointer-events-none absolute right-60 -top-8 h-48 w-48 rounded-full border-[5px] border-white/15" />
-        <div className="pointer-events-none absolute -right-2 -bottom-4 h-56 w-56 rounded-full border-[5px] border-white/15" />
+        <div className="pointer-events-none absolute -right-20 -top-20 h-80 w-80 rounded-full border-[10px] border-white/20" />
+        <div className="pointer-events-none absolute right-16 -bottom-28 h-64 w-64 rounded-full border-[8px] border-white/15" />
 
         <div className="relative flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <div>
@@ -318,16 +312,15 @@ function JoinedClubCard({ club, userId, nextMeeting, latestAnnouncement }: {
     ? `${new Date(nextMeeting.date).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })} · ${nextMeeting.block} · Room ${nextMeeting.room}`
     : null;
 
-  const isGoing = nextMeeting?.rsvp_user_ids.includes(userId);
+  const isGoing = nextMeeting ? nextMeeting.rsvp_user_ids.includes(userId) : false;
   const goingCount = nextMeeting?.rsvp_user_ids.length ?? 0;
 
   return (
     <div className="rounded-[20px] overflow-hidden shadow-md" style={{ backgroundColor: `#${club.color_hex}` }}>
       {/* Header */}
       <div className="relative flex items-center gap-3 px-4 pt-4 pb-3">
-        {/* Subtle decorative ring */}
-        <div className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full border-[5px] border-white/10" />
-        <div className="pointer-events-none absolute -right-2 top-4 h-20 w-20 rounded-full border-[4px] border-white/10" />
+        {/* Decorative ring */}
+        <div className="pointer-events-none absolute -right-10 -top-10 h-36 w-36 rounded-full border-[8px] border-white/10" />
         <ClubIcon colorHex={club.color_hex} iconName={club.icon_name} size={34} />
         <span className="flex-1 font-bold text-white text-base truncate">{club.name}</span>
         <span className="shrink-0 rounded-full border px-2.5 py-0.5 text-[11px] font-semibold"
@@ -338,7 +331,8 @@ function JoinedClubCard({ club, userId, nextMeeting, latestAnnouncement }: {
       </div>
 
       {/* Body — white panel */}
-      <div className="mx-3 mb-3 rounded-[14px] bg-white/95 px-3 py-3 space-y-2.5">
+      <div className="mx-3 mb-3 rounded-[14px] bg-white px-3 py-3 space-y-2.5"
+        style={{ boxShadow: "0 4px 12px rgba(0,0,0,0.18), 0 1px 3px rgba(0,0,0,0.12)" }}>
         {dateStr && (
           <p className="text-xs text-gray-500">{dateStr}</p>
         )}
@@ -350,23 +344,25 @@ function JoinedClubCard({ club, userId, nextMeeting, latestAnnouncement }: {
             )}
           </div>
         )}
-        <div className="flex items-center justify-between pt-0.5">
-          <span className="text-xs text-gray-400">{goingCount} going</span>
-          {isGoing ? (
-            <span className="text-xs font-semibold" style={{ color: "#16A34A" }}>✓ You&apos;re in</span>
-          ) : isElevated ? (
-            <div className="flex gap-1.5">
-              <Link href={`/clubs/${club.id}/edit`} onClick={(e) => e.stopPropagation()}
-                className="rounded-full bg-gray-100 px-2.5 py-1 text-[11px] font-semibold text-gray-600">
-                Edit
-              </Link>
-              <Link href={`/clubs/${club.id}#post`} onClick={(e) => e.stopPropagation()}
-                className="rounded-full bg-gray-100 px-2.5 py-1 text-[11px] font-semibold text-gray-600">
-                Post update
-              </Link>
-            </div>
-          ) : null}
-        </div>
+        {(isGoing || isElevated || (nextMeeting && goingCount > 0)) && (
+          <div className="flex items-center justify-between pt-0.5">
+            {nextMeeting && goingCount > 0 && <span className="text-xs text-gray-400">{goingCount} going</span>}
+            {isGoing ? (
+              <span className="text-xs font-semibold ml-auto" style={{ color: "#16A34A" }}>✓ You&apos;re in</span>
+            ) : isElevated ? (
+              <div className="flex gap-1.5 ml-auto">
+                <Link href={`/clubs/${club.id}/edit`} onClick={(e) => e.stopPropagation()}
+                  className="rounded-full bg-gray-100 px-2.5 py-1 text-[11px] font-semibold text-gray-600">
+                  Edit
+                </Link>
+                <Link href={`/clubs/${club.id}#post`} onClick={(e) => e.stopPropagation()}
+                  className="rounded-full bg-gray-100 px-2.5 py-1 text-[11px] font-semibold text-gray-600">
+                  Post update
+                </Link>
+              </div>
+            ) : null}
+          </div>
+        )}
       </div>
     </div>
   );
