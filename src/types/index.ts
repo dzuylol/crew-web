@@ -98,9 +98,11 @@ export function stableColor(id: string): string {
 
 export function daysFromNow(dateStr: string): number {
   const now = new Date();
+  now.setHours(0, 0, 0, 0);
   const date = new Date(dateStr);
+  date.setHours(0, 0, 0, 0);
   const diff = date.getTime() - now.getTime();
-  return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+  return Math.max(0, Math.round(diff / (1000 * 60 * 60 * 24)));
 }
 
 export function relativeDayLabel(dateStr: string): string {

@@ -4,13 +4,15 @@ import Link from "next/link";
 import type { Club, Meeting, Announcement, AppUser } from "@/types";
 import { getRole, canManage, isClubAdmin, allMemberCount, relativeDayLabel } from "@/types";
 import JoinLeaveButton from "./JoinLeaveButton";
-import RsvpButton from "./RsvpButton";
+import RsvpSection from "./RsvpSection";
 import AddMeetingButton from "./AddMeetingButton";
 import AddAnnouncementButton from "./AddAnnouncementButton";
 import RosterSection from "./RosterSection";
 import DeleteAnnouncementButton from "./DeleteAnnouncementButton";
 import DeleteMeetingButton from "./DeleteMeetingButton";
 import DeleteClubButton from "./DeleteClubButton";
+import EditMeetingButton from "./EditMeetingButton";
+import EditAnnouncementButton from "./EditAnnouncementButton";
 
 export default async function ClubDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -42,6 +44,13 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ id:
   const rosterIds = [...new Set([club.admin_id, ...club.officer_ids, ...club.member_ids])];
   const { data: rosterData } = await supabase.from("users").select("*").in("id", rosterIds);
   const roster = (rosterData ?? []) as AppUser[];
+
+  // Fetch attendee profiles for meetings (all unique RSVP user IDs)
+  const allRsvpIds = [...new Set(meetings.flatMap((m) => m.rsvp_user_ids))];
+  const { data: attendeeData } = allRsvpIds.length > 0
+    ? await supabase.from("users").select("id, first_name, last_name").in("id", allRsvpIds)
+    : { data: [] };
+  const attendeeProfiles = (attendeeData ?? []) as { id: string; first_name: string; last_name: string }[];
 
   const role = getRole(club, user.id);
   const manage = canManage(club, user.id, isSuperAdmin);
@@ -101,7 +110,7 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ id:
           ) : (
             <div className="space-y-3">
               {upcomingMeetings.map((m) => (
-                <MeetingCard key={m.id} meeting={m} club={club} userId={user.id} canDelete={manage} />
+                <MeetingCard key={m.id} meeting={m} club={club} userId={user.id} canDelete={manage} attendeeProfiles={attendeeProfiles} />
               ))}
             </div>
           )}
@@ -130,7 +139,7 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ id:
           <Section title={`Past meetings (${pastMeetings.length})`}>
             <div className="space-y-3">
               {pastMeetings.slice(0, 3).map((m) => (
-                <MeetingCard key={m.id} meeting={m} club={club} userId={user.id} canDelete={manage} past />
+                <MeetingCard key={m.id} meeting={m} club={club} userId={user.id} canDelete={manage} attendeeProfiles={attendeeProfiles} past />
               ))}
             </div>
           </Section>
@@ -157,39 +166,47 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
-function MeetingCard({ meeting, club, userId, canDelete, past }: {
-  meeting: Meeting; club: Club; userId: string; canDelete: boolean; past?: boolean;
+function MeetingCard({ meeting, club, userId, canDelete, attendeeProfiles, past }: {
+  meeting: Meeting; club: Club; userId: string; canDelete: boolean;
+  attendeeProfiles: { id: string; first_name: string; last_name: string }[];
+  past?: boolean;
 }) {
   const d = new Date(meeting.date);
   const weekday = d.toLocaleDateString("en-US", { weekday: "short" }).toUpperCase();
   const day = d.getDate();
 
   return (
-    <div className={`card-shadow flex items-start gap-3 rounded-[18px] bg-white p-4 ${past ? "opacity-60" : ""}`}>
-      <div className="flex w-12 shrink-0 flex-col items-center justify-center rounded-xl py-2 text-white"
-        style={{ backgroundColor: `#${club.color_hex}` }}>
-        <span className="text-[10px] font-bold">{weekday}</span>
-        <span className="text-lg font-bold leading-none">{day}</span>
-      </div>
-      <div className="min-w-0 flex-1">
-        <div className="flex items-center justify-between gap-2">
-          <p className="font-semibold text-gray-900">{meeting.title}</p>
-          <div className="flex items-center gap-1 shrink-0">
-            {!past && <span className="text-xs text-gray-400">{relativeDayLabel(meeting.date)}</span>}
-            {canDelete && <DeleteMeetingButton meetingId={meeting.id} />}
-          </div>
+    <div className={`card-shadow rounded-[18px] bg-white p-4 ${past ? "opacity-60" : ""}`}>
+      <div className="flex items-start gap-3">
+        <div className="flex w-12 shrink-0 flex-col items-center justify-center rounded-xl py-2 text-white"
+          style={{ backgroundColor: `#${club.color_hex}` }}>
+          <span className="text-[10px] font-bold">{weekday}</span>
+          <span className="text-lg font-bold leading-none">{day}</span>
         </div>
-        <p className="mt-0.5 text-xs text-gray-500">{meeting.block}{meeting.room ? ` · Room ${meeting.room}` : ""}</p>
-        {meeting.description && <p className="mt-1 text-sm text-gray-600 line-clamp-2">{meeting.description}</p>}
-        <p className="mt-1 text-xs text-gray-400">{meeting.rsvp_user_ids.length} going</p>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center justify-between gap-2">
+            <p className="font-semibold text-gray-900">{meeting.title}</p>
+            <div className="flex items-center gap-0.5 shrink-0">
+              {!past && <span className="text-xs text-gray-400 mr-1">{relativeDayLabel(meeting.date)}</span>}
+              {canDelete && <EditMeetingButton meeting={meeting} colorHex={club.color_hex} />}
+              {canDelete && <DeleteMeetingButton meetingId={meeting.id} />}
+            </div>
+          </div>
+          <p className="mt-0.5 text-xs text-gray-500">{meeting.block}{meeting.room ? ` · Room ${meeting.room}` : ""}</p>
+          {meeting.description && <p className="mt-1 text-sm text-gray-600 line-clamp-2">{meeting.description}</p>}
+        </div>
       </div>
       {!past && (
-        <RsvpButton
+        <RsvpSection
           meetingId={meeting.id}
           initialIds={meeting.rsvp_user_ids}
           userId={userId}
           colorHex={club.color_hex}
+          attendeeProfiles={attendeeProfiles}
         />
+      )}
+      {past && meeting.rsvp_user_ids.length > 0 && (
+        <p className="mt-1 text-xs text-gray-400">{meeting.rsvp_user_ids.length} attended</p>
       )}
     </div>
   );
@@ -203,8 +220,9 @@ function AnnouncementCard({ announcement, club, canDelete }: {
     <div className="card-shadow rounded-[16px] bg-white p-4">
       <div className="flex items-start justify-between gap-2">
         <p className="font-semibold text-gray-900">{announcement.title}</p>
-        <div className="flex items-center gap-1 shrink-0">
-          <span className="text-xs text-gray-400">{dateStr}</span>
+        <div className="flex items-center gap-0.5 shrink-0">
+          <span className="text-xs text-gray-400 mr-1">{dateStr}</span>
+          {canDelete && <EditAnnouncementButton announcement={announcement} colorHex={club.color_hex} />}
           {canDelete && <DeleteAnnouncementButton announcementId={announcement.id} />}
         </div>
       </div>

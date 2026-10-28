@@ -12,7 +12,6 @@ const HOME_COLOR = "#7A1F2E";
 export default function ProfilePage() {
   const [user, setUser] = useState<AppUser | null>(null);
   const [email, setEmail] = useState("");
-  const [dark, setDark] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -33,20 +32,7 @@ export default function ProfilePage() {
       }
     }
     load();
-    setDark(localStorage.getItem("theme") === "dark");
   }, [router]);
-
-  function toggleDark() {
-    const next = !dark;
-    setDark(next);
-    if (next) {
-      document.documentElement.setAttribute("data-theme", "dark");
-      localStorage.setItem("theme", "dark");
-    } else {
-      document.documentElement.removeAttribute("data-theme");
-      localStorage.setItem("theme", "light");
-    }
-  }
 
   async function saveName() {
     if (!user || !firstName.trim()) return;
@@ -143,29 +129,6 @@ export default function ProfilePage() {
           )}
         </div>
 
-        {/* Settings */}
-        <div className="card-shadow overflow-hidden rounded-[20px]" style={{ background: "var(--card)" }}>
-          <p className="px-5 pt-4 pb-2 text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--foreground)", opacity: 0.4 }}>
-            Appearance
-          </p>
-          <SettingRow
-            label="Dark mode"
-            right={
-              <button
-                onClick={toggleDark}
-                className="relative h-7 w-12 rounded-full transition-colors duration-200"
-                style={{ backgroundColor: dark ? HOME_COLOR : "#E5E5EA" }}
-                aria-label="Toggle dark mode"
-              >
-                <span
-                  className="absolute top-0.5 h-6 w-6 rounded-full bg-white shadow transition-transform duration-200"
-                  style={{ transform: dark ? "translateX(20px)" : "translateX(2px)" }}
-                />
-              </button>
-            }
-          />
-        </div>
-
         {/* Account */}
         <div className="card-shadow overflow-hidden rounded-[20px]" style={{ background: "var(--card)" }}>
           <p className="px-5 pt-4 pb-2 text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--foreground)", opacity: 0.4 }}>
@@ -186,11 +149,3 @@ export default function ProfilePage() {
   );
 }
 
-function SettingRow({ label, right }: { label: string; right: React.ReactNode }) {
-  return (
-    <div className="flex items-center justify-between px-5 py-4">
-      <span className="text-sm font-medium" style={{ color: "var(--foreground)" }}>{label}</span>
-      {right}
-    </div>
-  );
-}

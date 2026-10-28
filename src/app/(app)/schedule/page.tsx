@@ -217,7 +217,7 @@ export default function SchedulePage() {
               </Link>
             )}
           </div>
-          <div className="space-y-2">
+          <div className="space-y-4">
             {groups.map((group, gi) => {
               if (!group.hasMeetings) {
                 const first = group.days[0];
@@ -234,12 +234,12 @@ export default function SchedulePage() {
               const dayAbbr = day.toLocaleDateString("en-US", { weekday: "short" }).toUpperCase();
               const dayNum = day.getDate();
               return (
-                <div key={gi} className="flex gap-4">
-                  <div className="flex flex-col items-center w-8 shrink-0 pt-3">
+                <div key={gi} className="flex gap-5">
+                  <div className="flex flex-col items-center w-10 shrink-0 pt-4">
                     <span className="text-[10px] font-bold text-gray-400 tracking-wider">{dayAbbr}</span>
-                    <span className="text-xl font-black text-gray-800 leading-none">{dayNum}</span>
+                    <span className="text-2xl font-black text-gray-800 leading-none">{dayNum}</span>
                   </div>
-                  <div className="flex-1 min-w-0 space-y-2">
+                  <div className="flex-1 min-w-0 space-y-3">
                     {dayMeetings.map((m) => {
                       const club = clubs.find((c) => c.id === m.club_id);
                       if (!club) return null;
@@ -248,11 +248,11 @@ export default function SchedulePage() {
                       const label = relativeDayLabel(m.date);
                       return (
                         <Link key={m.id} href={`/clubs/${club.id}`}>
-                          <div className="flex items-start gap-3 rounded-2xl bg-white p-4" style={{ boxShadow: "0 4px 14px rgba(0,0,0,0.10), 0 1px 4px rgba(0,0,0,0.08)" }}>
-                            <ClubIcon colorHex={club.color_hex} iconName={club.icon_name} size={40} />
+                          <div className="flex items-center gap-4 rounded-2xl bg-white px-5 py-4" style={{ boxShadow: "0 4px 14px rgba(0,0,0,0.10), 0 1px 4px rgba(0,0,0,0.08)" }}>
+                            <ClubIcon colorHex={club.color_hex} iconName={club.icon_name} size={44} />
                             <div className="min-w-0 flex-1">
                               <div className="flex items-center gap-2 mb-0.5">
-                                <p className="font-bold text-gray-900">{club.name}</p>
+                                <p className="font-bold text-gray-900 text-base">{club.name}</p>
                                 {(role === "officer" || role === "admin") && (
                                   <span className="rounded-full px-2 py-0.5 text-[10px] font-bold"
                                     style={{ backgroundColor: "#FEF3C7", color: "#D97706" }}>
@@ -260,14 +260,14 @@ export default function SchedulePage() {
                                   </span>
                                 )}
                               </div>
-                              <p className="text-xs text-gray-500">{m.block} · Room {m.room} · {m.description}</p>
-                              <p className="text-xs text-gray-400 mt-0.5">
-                                {m.rsvp_user_ids.length > 0 ? `${m.rsvp_user_ids.length} going` : "Be the first to join"} · {label}
+                              <p className="text-sm text-gray-500 mt-0.5">{m.block} · Room {m.room} · {m.description}</p>
+                              <p className="text-xs text-gray-400 mt-1">
+                                {m.rsvp_user_ids.length > 0 ? `${m.rsvp_user_ids.length} going` : "Be the first to join"} · <span className="font-medium" style={{ color: SCHEDULE_COLOR }}>{label}</span>
                               </p>
                             </div>
                             <button
                               onClick={(e) => toggleRsvp(e, m.id, going)}
-                              className="shrink-0 rounded-full px-3 py-1.5 text-xs font-bold cursor-pointer transition-colors hover:opacity-80"
+                              className="shrink-0 rounded-full px-4 py-2 text-sm font-bold cursor-pointer transition-all hover:opacity-80"
                               style={going
                                 ? { backgroundColor: "#1C1C1E", color: "white" }
                                 : { backgroundColor: "#E7E7EC", color: "#374151" }}>
