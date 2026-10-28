@@ -42,8 +42,8 @@ export default function AddMeetingButton({ clubId, colorHex }: { clubId: string;
 
   if (!open) return (
     <button onClick={() => setOpen(true)}
-      className="w-full rounded-full py-2.5 text-sm font-semibold text-white"
-      style={{ backgroundColor: `#${colorHex}` }}>
+      className="w-full rounded-full py-2.5 text-sm font-semibold bg-white"
+      style={{ color: `#${colorHex}` }}>
       + Schedule meeting
     </button>
   );
