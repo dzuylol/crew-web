@@ -162,22 +162,25 @@ export default function SchedulePage() {
             {!isCurrentWeek && (
               <button
                 onClick={() => setWeekOffset(0)}
-                className="rounded-full bg-white px-3 py-1 text-xs font-bold"
-                style={{ color: SCHEDULE_COLOR }}>
+                className="rounded-full px-3 py-1 text-xs font-bold text-white"
+                style={{ background: "rgba(255,255,255,0.15)", backdropFilter: "blur(10px)", border: "1px solid rgba(255,255,255,0.25)" }}>
                 Today
               </button>
             )}
-            <button
-              onClick={() => setWeekOffset(w => w - 1)}
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 hover:bg-white/30 transition-colors">
-              <ChevronLeft size={16} className="text-white" />
-            </button>
-            <span className="text-sm font-semibold text-white whitespace-nowrap">{weekLabel}</span>
-            <button
-              onClick={() => setWeekOffset(w => w + 1)}
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 hover:bg-white/30 transition-colors">
-              <ChevronRight size={16} className="text-white" />
-            </button>
+            <div className="flex items-center gap-1 rounded-full px-2 py-1.5"
+              style={{ background: "rgba(255,255,255,0.12)", backdropFilter: "blur(12px)", border: "1px solid rgba(255,255,255,0.2)" }}>
+              <button
+                onClick={() => setWeekOffset(w => w - 1)}
+                className="flex h-7 w-7 items-center justify-center rounded-full hover:bg-white/20 transition-colors">
+                <ChevronLeft size={15} className="text-white" />
+              </button>
+              <span className="text-sm font-semibold text-white whitespace-nowrap px-1">{weekLabel}</span>
+              <button
+                onClick={() => setWeekOffset(w => w + 1)}
+                className="flex h-7 w-7 items-center justify-center rounded-full hover:bg-white/20 transition-colors">
+                <ChevronRight size={15} className="text-white" />
+              </button>
+            </div>
           </div>
         </div>
 

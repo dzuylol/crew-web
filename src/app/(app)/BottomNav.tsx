@@ -50,7 +50,7 @@ export default function BottomNav() {
   const activeTab = tabs.find((t) => isActive(t.href));
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 flex border-t border-gray-200 bg-white/90 backdrop-blur-md safe-area-inset-bottom">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 flex border-t border-white/30 bg-white/65 backdrop-blur-xl safe-area-inset-bottom">
       {tabs.map((tab) => {
         const active = isActive(tab.href);
         return (
