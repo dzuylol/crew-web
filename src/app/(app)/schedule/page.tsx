@@ -33,7 +33,6 @@ export default function SchedulePage() {
   const [clubs, setClubs] = useState<Club[]>([]);
   const [meetings, setMeetings] = useState<Meeting[]>([]);
   const [weekOffset, setWeekOffset] = useState(0);
-  const [selectedDay, setSelectedDay] = useState<Date>(new Date());
   const [loading, setLoading] = useState(true);
   const [rsvpOverrides, setRsvpOverrides] = useState<Map<string, boolean>>(new Map());
 
@@ -178,32 +177,29 @@ export default function SchedulePage() {
         <div className="grid grid-cols-7 gap-1">
           {weekDays.map((day) => {
             const hasMeeting = meetingsOn(day).length > 0;
-            const isSelected = sameDay(day, selectedDay);
             const isToday = sameDay(day, new Date());
             return (
-              <button
+              <div
                 key={day.toISOString()}
-                onClick={() => setSelectedDay(day)}
-                className="flex flex-col items-center justify-center gap-0.5 rounded-xl py-2.5 transition-colors h-[68px]"
-                style={isSelected ? { backgroundColor: "rgba(255,255,255,0.2)" } : undefined}>
+                className="flex flex-col items-center justify-center gap-0.5 rounded-xl py-2.5 h-[68px]"
+                style={isToday ? { backgroundColor: "rgba(255,255,255,0.2)" } : undefined}>
                 <span className="text-[10px] font-bold uppercase tracking-wider"
-                  style={{ color: isSelected ? "white" : "rgba(255,255,255,0.5)" }}>
+                  style={{ color: isToday ? "white" : "rgba(255,255,255,0.5)" }}>
                   {day.toLocaleDateString("en-US", { weekday: "short" })}
                 </span>
                 <span className="text-base font-black leading-none"
-                  style={{ color: isSelected || isToday ? "white" : "rgba(255,255,255,0.7)" }}>
+                  style={{ color: isToday ? "white" : "rgba(255,255,255,0.7)" }}>
                   {day.getDate()}
                 </span>
                 {isToday ? (
-                  <span className="text-[9px] font-bold uppercase tracking-wider"
-                    style={{ color: isSelected ? "white" : "rgba(255,255,255,0.5)" }}>
+                  <span className="text-[9px] font-bold uppercase tracking-wider text-white/60">
                     TODAY
                   </span>
                 ) : (
                   <div className="h-1 w-1 rounded-full"
                     style={{ backgroundColor: hasMeeting ? "white" : "transparent" }} />
                 )}
-              </button>
+              </div>
             );
           })}
         </div>
