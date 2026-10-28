@@ -212,14 +212,10 @@ function PublicHome({ clubs, meetings }: { clubs: Club[]; meetings: Meeting[] })
             Meetings and updates for every Plano Senior High club, all in one hub.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
-            <Link href="/login"
-              className="rounded-full bg-white px-6 py-2.5 text-sm font-bold"
-              style={{ color: PRIMARY }}>
-              Sign in with Google
-            </Link>
             <Link href="/clubs"
-              className="rounded-full border border-white/30 bg-white/10 px-6 py-2.5 text-sm font-semibold text-white">
-              Browse clubs
+              className="rounded-full bg-white px-8 py-3 text-sm font-bold"
+              style={{ color: PRIMARY }}>
+              Browse clubs →
             </Link>
           </div>
         </div>
@@ -239,9 +235,8 @@ function PublicHome({ clubs, meetings }: { clubs: Club[]; meetings: Meeting[] })
 
       {/* Club grid */}
       <div className="px-5 pb-8 md:px-8">
-        <div className="flex items-center justify-between mb-4">
+        <div className="mb-4">
           <h2 className="font-bold text-gray-900 text-lg">All clubs</h2>
-          <Link href="/clubs" className="text-sm font-semibold" style={{ color: PRIMARY }}>See all →</Link>
         </div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3">
           {clubs.slice(0, 6).map((club) => (
@@ -256,11 +251,11 @@ function PublicHome({ clubs, meetings }: { clubs: Club[]; meetings: Meeting[] })
           ))}
         </div>
 
-        <div className="mt-8 rounded-2xl p-6 text-center" style={{ backgroundColor: PRIMARY }}>
-          <p className="text-white font-bold text-lg">Ready to join?</p>
-          <p className="text-white/70 text-sm mt-1">Sign in with your Google account to RSVP, get announcements, and more.</p>
+        <div className="mt-8 rounded-2xl p-8 text-center" style={{ backgroundColor: PRIMARY }}>
+          <p className="text-white font-bold text-xl">Ready to join?</p>
+          <p className="text-white/70 text-sm mt-2">Sign in with your Google account to RSVP, get announcements, and more.</p>
           <Link href="/login"
-            className="mt-4 inline-block rounded-full bg-white px-6 py-2.5 text-sm font-bold"
+            className="mt-5 inline-flex items-center gap-2 rounded-full bg-white px-8 py-3 text-base font-bold shadow-lg"
             style={{ color: PRIMARY }}>
             Sign in with Google
           </Link>
