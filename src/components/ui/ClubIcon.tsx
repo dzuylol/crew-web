@@ -1,6 +1,6 @@
 import {
   Crown, Medal, Cpu, Palette, Gamepad2, Theater, Music, Book,
-  FlaskConical, Leaf, Globe, Camera, Trophy, PersonRunning, Moon, Hammer,
+  FlaskConical, Leaf, Globe, Camera, Trophy, Footprints, Moon, Hammer,
   Pencil, Users, Star, GraduationCap, Monitor, Atom, Mic, Heart,
   type LucideIcon,
 } from "lucide-react";
@@ -19,7 +19,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
   globe: Globe,
   camera: Camera,
   trophy: Trophy,
-  "person-running": PersonRunning,
+  "person-running": Footprints,
   moon: Moon,
   hammer: Hammer,
   pencil: Pencil,
