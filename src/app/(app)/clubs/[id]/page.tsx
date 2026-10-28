@@ -66,8 +66,12 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ id:
   return (
     <div className="min-h-dvh" style={{ background: "var(--background)" }}>
       {/* Crescent header */}
-      <div className="crescent-header px-5 pt-12 pb-20 text-white" style={{ backgroundColor: `#${club.color_hex}` }}>
-        <div className="flex items-start gap-3">
+      <div className="crescent-header relative overflow-hidden px-5 pt-12 pb-20 text-white" style={{ backgroundColor: `#${club.color_hex}` }}>
+        {/* Decorative rings */}
+        <div className="pointer-events-none absolute -right-20 -top-20 h-80 w-80 rounded-full border-[40px] border-white/15" />
+        <div className="pointer-events-none absolute right-16 -bottom-28 h-64 w-64 rounded-full border-[32px] border-white/10" />
+        <div className="pointer-events-none absolute -right-10 -top-32 h-[480px] w-[480px] rounded-full border-[28px] border-white/6" />
+        <div className="relative flex items-start gap-3">
           <Link href="/clubs" className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/20">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
               <path d="m15 18-6-6 6-6" />

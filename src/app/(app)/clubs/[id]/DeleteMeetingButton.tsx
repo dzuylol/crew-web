@@ -22,7 +22,7 @@ export default function DeleteMeetingButton({ meetingId }: { meetingId: string }
     <button
       onClick={handleDelete}
       disabled={loading}
-      className="shrink-0 p-1 rounded-full text-white/40 hover:text-red-300 transition-colors disabled:opacity-40"
+      className="shrink-0 p-1.5 rounded-full bg-red-50 text-red-400 hover:bg-red-100 hover:text-red-500 transition-colors disabled:opacity-40"
       aria-label="Delete meeting"
     >
       <Trash2 size={14} />

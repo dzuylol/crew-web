@@ -87,8 +87,9 @@ export default function ClubsPage() {
       <div className="relative overflow-hidden rounded-b-[28px] px-6 pt-8 pb-10 md:px-8"
         style={{ backgroundColor: CLUBS_COLOR, boxShadow: "0 8px 24px rgba(132,112,200,0.35), 0 2px 8px rgba(0,0,0,0.15)" }}>
         {/* Decorative rings */}
-        <div className="pointer-events-none absolute -right-20 -top-20 h-80 w-80 rounded-full border-[10px] border-white/20" />
-        <div className="pointer-events-none absolute right-16 -bottom-28 h-64 w-64 rounded-full border-[8px] border-white/15" />
+        <div className="pointer-events-none absolute -right-20 -top-20 h-80 w-80 rounded-full border-[40px] border-white/15" />
+        <div className="pointer-events-none absolute right-16 -bottom-28 h-64 w-64 rounded-full border-[32px] border-white/10" />
+        <div className="pointer-events-none absolute -right-10 -top-32 h-[480px] w-[480px] rounded-full border-[28px] border-white/6" />
 
         <div className="relative flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <div>
