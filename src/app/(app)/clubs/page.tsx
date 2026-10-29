@@ -227,7 +227,7 @@ function JoinedView({ joinedClubs, exploreClubs, userId, nextMeetingFor, latestA
         ) : (
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {joinedClubs.map((club) => (
-              <Link key={club.id} href={`/clubs/${club.id}`}>
+              <Link key={club.id} href={`/clubs/${club.id}`} className="block h-full">
                 <JoinedClubCard
                   club={club}
                   userId={userId!}
@@ -319,7 +319,7 @@ function JoinedClubCard({ club, userId, nextMeeting, latestAnnouncement }: {
   const goingCount = nextMeeting?.rsvp_user_ids.length ?? 0;
 
   return (
-    <div className="rounded-[20px] overflow-hidden shadow-md" style={{ backgroundColor: `#${club.color_hex}` }}>
+    <div className="rounded-[20px] overflow-hidden shadow-md h-full" style={{ backgroundColor: `#${club.color_hex}` }}>
       {/* Header */}
       <div className="relative flex items-center gap-3 px-4 pt-4 pb-3">
         {/* Decorative ring */}
