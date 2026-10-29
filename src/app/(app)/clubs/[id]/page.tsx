@@ -100,7 +100,7 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ id:
 
       <div className="-mt-10 relative z-10 space-y-5 px-5 pb-8">
         {/* Join/Leave */}
-        {!isSuperAdmin && <JoinLeaveButton club={club} userId={user.id} role={role} />}
+        <JoinLeaveButton club={club} userId={user.id} role={role} />
 
         {/* Officer/Admin actions */}
         {manage && (
