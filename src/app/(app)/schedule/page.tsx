@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import type { Club, Meeting } from "@/types";
-import { getRole, relativeDayLabel } from "@/types";
+import { getRole, relativeDayLabel, localDate } from "@/types";
 import ClubIcon from "@/components/ui/ClubIcon";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -82,10 +82,10 @@ export default function SchedulePage() {
   const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
 
   const monthFmt = (d: Date) => d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-  const weekLabel = `${monthFmt(weekStart)} to ${monthFmt(weekEnd)}, ${weekEnd.getFullYear()}`;
+  const weekLabel = `${monthFmt(weekStart)} – ${monthFmt(weekEnd)}`;
 
   function meetingsOn(day: Date) {
-    return myMeetings.filter((m) => sameDay(new Date(m.date), day));
+    return myMeetings.filter((m) => sameDay(localDate(m.date), day));
   }
 
   const isCurrentWeek = weekOffset === 0;
@@ -97,11 +97,11 @@ export default function SchedulePage() {
   const weekClubCount = new Set(weekDays.flatMap(d => meetingsOn(d).map(m => m.club_id))).size;
   const freeDaysCount = weekDays.filter(d => meetingsOn(d).length === 0).length;
 
-  // "Got free time?" — clubs user hasn't joined with meetings on free days
-  const freeDays = weekDays.filter(d => meetingsOn(d).length === 0);
+  // "Got free time?" — clubs user hasn't joined with meetings on remaining free days (today or later only)
+  const freeDays = weekDays.filter(d => meetingsOn(d).length === 0 && d >= today);
   // One club suggestion per free day (clubs user hasn't joined)
   const freeDaySuggestions = freeDays.map(day => {
-    const m = meetings.find(x => !joinedClubIds.has(x.club_id) && sameDay(new Date(x.date), day));
+    const m = meetings.find(x => !joinedClubIds.has(x.club_id) && sameDay(localDate(x.date), day));
     if (!m) return null;
     const club = clubs.find(c => c.id === m.club_id);
     return club ? { club, meeting: m, day } : null;
@@ -148,47 +148,50 @@ export default function SchedulePage() {
           <div className="absolute pointer-events-none -right-24 top-2 h-64 w-64 rounded-full border-[20px] border-white/5" />
         </div>
 
-        <div className="relative flex items-end justify-between gap-4 mb-6">
-          <div>
+        <div className="relative mb-5">
+          <div className="flex items-start justify-between gap-2 mb-3">
             <h1 className="text-3xl font-black text-white md:text-4xl">My Schedule</h1>
-            <p className="mt-1 text-sm text-white/70">
-              {weekMeetingCount > 0
-                ? `${weekMeetingCount} meeting${weekMeetingCount !== 1 ? "s" : ""} this week.${myMeetings[0] ? ` The next one is ${relativeDayLabel(myMeetings[0].date).toLowerCase()}.` : ""}`
-                : "No meetings this week."}
-            </p>
-          </div>
-          {/* Week nav */}
-          <div className="flex items-center gap-2">
-            {!isCurrentWeek && (
-              <button
-                onClick={() => setWeekOffset(0)}
-                className="rounded-full px-3 py-1 text-xs font-bold text-white"
-                style={{ background: "rgba(255,255,255,0.15)", backdropFilter: "blur(10px)", border: "1px solid rgba(255,255,255,0.25)" }}>
-                Today
-              </button>
-            )}
-            <div className="flex items-center gap-1 rounded-full px-2 py-1.5"
-              style={{ background: "rgba(255,255,255,0.12)", backdropFilter: "blur(12px)", border: "1px solid rgba(255,255,255,0.2)" }}>
-              <button
-                onClick={() => setWeekOffset(w => w - 1)}
-                className="flex h-7 w-7 items-center justify-center rounded-full hover:bg-white/20 transition-colors">
-                <ChevronLeft size={15} className="text-white" />
-              </button>
-              <span className="text-sm font-semibold text-white whitespace-nowrap px-1">{weekLabel}</span>
-              <button
-                onClick={() => setWeekOffset(w => w + 1)}
-                className="flex h-7 w-7 items-center justify-center rounded-full hover:bg-white/20 transition-colors">
-                <ChevronRight size={15} className="text-white" />
-              </button>
+            {/* Week nav */}
+            <div className="flex items-center gap-1.5 shrink-0 mt-1">
+              {!isCurrentWeek && (
+                <button
+                  onClick={() => setWeekOffset(0)}
+                  className="rounded-full px-2.5 py-1 text-[11px] font-bold text-white"
+                  style={{ background: "rgba(255,255,255,0.15)", backdropFilter: "blur(10px)", border: "1px solid rgba(255,255,255,0.25)" }}>
+                  Today
+                </button>
+              )}
+              <div className="flex items-center gap-0.5 rounded-full px-1.5 py-1"
+                style={{ background: "rgba(255,255,255,0.12)", backdropFilter: "blur(12px)", border: "1px solid rgba(255,255,255,0.2)" }}>
+                <button
+                  onClick={() => setWeekOffset(w => w - 1)}
+                  className="flex h-6 w-6 items-center justify-center rounded-full hover:bg-white/20 transition-colors">
+                  <ChevronLeft size={13} className="text-white" />
+                </button>
+                <span className="text-xs font-semibold text-white whitespace-nowrap px-0.5">{weekLabel}</span>
+                <button
+                  onClick={() => setWeekOffset(w => w + 1)}
+                  className="flex h-6 w-6 items-center justify-center rounded-full hover:bg-white/20 transition-colors">
+                  <ChevronRight size={13} className="text-white" />
+                </button>
+              </div>
             </div>
           </div>
+          <p className="text-sm text-white/70">
+            {weekMeetingCount > 0
+              ? `${weekMeetingCount} meeting${weekMeetingCount !== 1 ? "s" : ""} this week.${myMeetings[0] ? ` Next: ${relativeDayLabel(myMeetings[0].date).toLowerCase()}.` : ""}`
+              : "No meetings this week."}
+          </p>
         </div>
 
         {/* Day strip — glassmorphism cards */}
         <div className="relative grid grid-cols-7 gap-1.5">
           {weekDays.map((day) => {
             const dayMeetings = meetingsOn(day);
-            const clubsOnDay = dayMeetings.map(m => clubs.find(c => c.id === m.club_id)).filter(Boolean) as typeof clubs;
+            const clubsOnDay = dayMeetings.map(m => {
+              const club = clubs.find(c => c.id === m.club_id);
+              return club ? { club, meeting: m } : null;
+            }).filter(Boolean) as { club: Club; meeting: Meeting }[];
             const isToday = sameDay(day, new Date());
             return (
               <div
@@ -215,11 +218,17 @@ export default function SchedulePage() {
                     TODAY
                   </span>
                 ) : clubsOnDay.length > 0 ? (
-                  <div className="flex gap-[3px] items-center mt-0.5">
-                    {clubsOnDay.slice(0, 3).map((club, i) => (
-                      <div key={i} className="h-[7px] w-[7px] rounded-full"
-                        style={{ backgroundColor: `#${club!.color_hex}`, boxShadow: `0 0 4px #${club!.color_hex}88` }} />
-                    ))}
+                  <div className="flex gap-[4px] items-center mt-0.5">
+                    {clubsOnDay.slice(0, 3).map(({ club, meeting }, i) => {
+                      const going = checkGoing(meeting);
+                      return (
+                        <div key={i} className="h-[7px] w-[7px] rounded-full"
+                          style={{
+                            backgroundColor: `#${club.color_hex}`,
+                            boxShadow: `0 0 0 2px ${going ? "rgba(255,255,255,0.95)" : "#F97316"}, 0 0 4px #${club.color_hex}88`
+                          }} />
+                      );
+                    })}
                   </div>
                 ) : (
                   <div className="h-[7px]" />
@@ -329,35 +338,37 @@ export default function SchedulePage() {
             </div>
           </div>
 
-          {freeDaySuggestions.length > 0 && (
-            <div className="rounded-2xl bg-white overflow-hidden">
+          {freeDays.length > 0 && (
+            <div className="rounded-2xl bg-white overflow-hidden"
+              style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.07), 0 1px 3px rgba(0,0,0,0.05)" }}>
               <div className="px-4 pt-4 pb-3 border-b border-gray-100">
                 <p className="font-bold text-gray-900 text-sm">Got free time?</p>
                 <p className="text-xs text-gray-400 mt-0.5">Clubs meeting on your open days.</p>
               </div>
-              <div className="divide-y divide-gray-50">
-                {freeDaySuggestions.map(({ club, day }) => {
-                  const dayName = day.toLocaleDateString("en-US", { weekday: "long" });
-                  const dayDate = day.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-                  return (
-                    <Link key={`${club.id}-${day.toISOString()}`} href={`/clubs/${club.id}`} className="block">
-                      <div className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors">
-                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl"
-                          style={{ backgroundColor: `#${club.color_hex}` }}>
-                          <div className="h-3.5 w-3.5 rounded-full bg-white/40" />
+              {freeDaySuggestions.length > 0 ? (
+                <div className="divide-y divide-gray-50">
+                  {freeDaySuggestions.map(({ club, day }) => {
+                    const dayName = day.toLocaleDateString("en-US", { weekday: "long" });
+                    const dayDate = day.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+                    return (
+                      <Link key={`${club.id}-${day.toISOString()}`} href={`/clubs/${club.id}`} className="block">
+                        <div className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors">
+                          <ClubIcon colorHex={club.color_hex} iconName={club.icon_name} size={36} />
+                          <div className="min-w-0 flex-1">
+                            <p className="text-xs font-bold text-gray-900 truncate">{club.name}</p>
+                            <p className="text-[10px] text-gray-400 mt-0.5">{dayName} · {dayDate}</p>
+                          </div>
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#D1D5DB" strokeWidth="2.5">
+                            <path d="m9 18 6-6-6-6" />
+                          </svg>
                         </div>
-                        <div className="min-w-0 flex-1">
-                          <p className="text-xs font-bold text-gray-900 truncate">{club.name}</p>
-                          <p className="text-[10px] text-gray-400 mt-0.5">{dayName} · {dayDate}</p>
-                        </div>
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#D1D5DB" strokeWidth="2.5">
-                          <path d="m9 18 6-6-6-6" />
-                        </svg>
-                      </div>
-                    </Link>
-                  );
-                })}
-              </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+              ) : (
+                <p className="text-xs text-gray-400 px-4 py-3">No clubs meeting on your open days.</p>
+              )}
             </div>
           )}
         </div>

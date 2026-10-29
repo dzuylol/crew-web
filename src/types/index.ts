@@ -97,11 +97,16 @@ export function stableColor(id: string): string {
   return "#" + PALETTE_HEXES[Math.abs(hash) % PALETTE_HEXES.length];
 }
 
+// Parse a DB date string using UTC components (handles any timezone format the client returns)
+export function localDate(dateStr: string): Date {
+  const d = new Date(dateStr);
+  return new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
+}
+
 export function daysFromNow(dateStr: string): number {
   const now = new Date();
   now.setHours(0, 0, 0, 0);
-  const date = new Date(dateStr);
-  date.setHours(0, 0, 0, 0);
+  const date = localDate(dateStr);
   const diff = date.getTime() - now.getTime();
   return Math.max(0, Math.round(diff / (1000 * 60 * 60 * 24)));
 }

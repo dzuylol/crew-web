@@ -1,8 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import type { Club, Meeting, Announcement, AppUser } from "@/types";
-import { getRole, canManage, isClubAdmin, allMemberCount, relativeDayLabel } from "@/types";
+import { getRole, canManage, isClubAdmin, allMemberCount, relativeDayLabel, localDate } from "@/types";
 import JoinLeaveButton from "./JoinLeaveButton";
 import RsvpSection from "./RsvpSection";
 import AddMeetingButton from "./AddMeetingButton";
@@ -18,7 +18,7 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ id:
   const { id } = await params;
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) notFound();
+  if (!user) redirect("/login");
 
   const [
     { data: clubData },
@@ -67,11 +67,13 @@ export default async function ClubDetailPage({ params }: { params: Promise<{ id:
     <div className="min-h-dvh" style={{ background: "var(--background)" }}>
       {/* Crescent header */}
       <div className="crescent-header relative px-5 pt-12 pb-20 text-white" style={{ backgroundColor: `#${club.color_hex}` }}>
-        {/* Decorative rings */}
-        <div className="pointer-events-none absolute -right-8 -top-12 h-64 w-64 rounded-full border-[20px] border-white/15" />
-        <div className="pointer-events-none absolute right-20 top-8 h-64 w-64 rounded-full border-[20px] border-white/10" />
-        <div className="pointer-events-none absolute right-8 -bottom-16 h-64 w-64 rounded-full border-[20px] border-white/7" />
-        <div className="pointer-events-none absolute -right-20 -top-28 h-64 w-64 rounded-full border-[20px] border-white/5" />
+        {/* Decorative rings — clipped so they don't cause horizontal scroll */}
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="absolute -right-8 -top-12 h-64 w-64 rounded-full border-[20px] border-white/15" />
+          <div className="absolute right-20 top-8 h-64 w-64 rounded-full border-[20px] border-white/10" />
+          <div className="absolute right-8 -bottom-16 h-64 w-64 rounded-full border-[20px] border-white/7" />
+          <div className="absolute -right-20 -top-28 h-64 w-64 rounded-full border-[20px] border-white/5" />
+        </div>
         <div className="relative flex items-start gap-3">
           <Link href="/clubs" className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/20">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
@@ -176,7 +178,7 @@ function MeetingCard({ meeting, club, userId, canDelete, attendeeProfiles, past 
   attendeeProfiles: { id: string; first_name: string; last_name: string }[];
   past?: boolean;
 }) {
-  const d = new Date(meeting.date);
+  const d = localDate(meeting.date);
   const weekday = d.toLocaleDateString("en-US", { weekday: "short" }).toUpperCase();
   const day = d.getDate();
 

@@ -86,11 +86,11 @@ export default function ClubsPage() {
       {/* Header */}
       <div className="relative overflow-hidden rounded-b-[28px] px-6 pt-8 pb-10 md:px-8"
         style={{ backgroundColor: CLUBS_COLOR, boxShadow: "0 8px 24px rgba(132,112,200,0.35), 0 2px 8px rgba(0,0,0,0.15)" }}>
-        {/* Decorative rings */}
-        <div className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full border-[20px] border-white/15" />
-        <div className="pointer-events-none absolute right-24 top-6 h-64 w-64 rounded-full border-[20px] border-white/10" />
-        <div className="pointer-events-none absolute right-4 -bottom-20 h-64 w-64 rounded-full border-[20px] border-white/7" />
-        <div className="pointer-events-none absolute -right-28 top-4 h-64 w-64 rounded-full border-[20px] border-white/5" />
+        {/* Decorative rings — clipped to prevent horizontal scroll */}
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="absolute -right-10 -top-10 h-48 w-48 rounded-full border-[12px] border-white/15" />
+          <div className="absolute right-16 -bottom-14 h-44 w-44 rounded-full border-[10px] border-white/10" />
+        </div>
 
         <div className="relative flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <div>
@@ -333,40 +333,42 @@ function JoinedClubCard({ club, userId, nextMeeting, latestAnnouncement }: {
         <ChevronRight size={15} className="shrink-0 text-white/40" />
       </div>
 
-      {/* Body — white panel */}
-      <div className="mx-3 mb-3 rounded-[14px] bg-white px-3 py-3 space-y-2.5"
-        style={{ boxShadow: "0 4px 12px rgba(0,0,0,0.18), 0 1px 3px rgba(0,0,0,0.12)" }}>
-        {dateStr && (
-          <p className="text-xs text-gray-500">{dateStr}</p>
-        )}
-        {latestAnnouncement && (
-          <div>
-            <p className="font-semibold text-gray-900 text-sm leading-snug">{latestAnnouncement.title}</p>
-            {latestAnnouncement.body && (
-              <p className="text-gray-500 text-xs mt-0.5 line-clamp-2">{latestAnnouncement.body}</p>
-            )}
-          </div>
-        )}
-        {(isGoing || isElevated || (nextMeeting && goingCount > 0)) && (
-          <div className="flex items-center justify-between pt-0.5">
-            {nextMeeting && goingCount > 0 && <span className="text-xs text-gray-400">{goingCount} going</span>}
-            {isGoing ? (
-              <span className="text-xs font-semibold ml-auto" style={{ color: "#16A34A" }}>✓ You&apos;re in</span>
-            ) : isElevated ? (
-              <div className="flex gap-1.5 ml-auto">
-                <Link href={`/clubs/${club.id}/edit`} onClick={(e) => e.stopPropagation()}
-                  className="rounded-full bg-gray-100 px-2.5 py-1 text-[11px] font-semibold text-gray-600">
-                  Edit
-                </Link>
-                <Link href={`/clubs/${club.id}#post`} onClick={(e) => e.stopPropagation()}
-                  className="rounded-full bg-gray-100 px-2.5 py-1 text-[11px] font-semibold text-gray-600">
-                  Post update
-                </Link>
-              </div>
-            ) : null}
-          </div>
-        )}
-      </div>
+      {/* Body — white panel (only render when there's something to show) */}
+      {(dateStr || latestAnnouncement || isGoing || isElevated || (nextMeeting && goingCount > 0)) && (
+        <div className="mx-3 mb-3 rounded-[14px] bg-white px-3 py-3 space-y-2.5"
+          style={{ boxShadow: "0 4px 12px rgba(0,0,0,0.18), 0 1px 3px rgba(0,0,0,0.12)" }}>
+          {dateStr && (
+            <p className="text-xs text-gray-500">{dateStr}</p>
+          )}
+          {latestAnnouncement && (
+            <div>
+              <p className="font-semibold text-gray-900 text-sm leading-snug">{latestAnnouncement.title}</p>
+              {latestAnnouncement.body && (
+                <p className="text-gray-500 text-xs mt-0.5 line-clamp-2">{latestAnnouncement.body}</p>
+              )}
+            </div>
+          )}
+          {(isGoing || isElevated || (nextMeeting && goingCount > 0)) && (
+            <div className="flex items-center justify-between pt-0.5">
+              {nextMeeting && goingCount > 0 && <span className="text-xs text-gray-400">{goingCount} going</span>}
+              {isGoing ? (
+                <span className="text-xs font-semibold ml-auto" style={{ color: "#16A34A" }}>✓ You&apos;re in</span>
+              ) : isElevated ? (
+                <div className="flex gap-1.5 ml-auto">
+                  <Link href={`/clubs/${club.id}/edit`} onClick={(e) => e.stopPropagation()}
+                    className="rounded-full bg-gray-100 px-2.5 py-1 text-[11px] font-semibold text-gray-600">
+                    Edit
+                  </Link>
+                  <Link href={`/clubs/${club.id}#post`} onClick={(e) => e.stopPropagation()}
+                    className="rounded-full bg-gray-100 px-2.5 py-1 text-[11px] font-semibold text-gray-600">
+                    Post update
+                  </Link>
+                </div>
+              ) : null}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
