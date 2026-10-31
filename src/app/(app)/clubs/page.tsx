@@ -103,7 +103,7 @@ export default function ClubsPage() {
           </div>
 
           {/* Tab pills */}
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={() => setTab("joined")}
               className="rounded-full px-4 py-2 text-sm font-semibold transition-colors"
@@ -124,7 +124,7 @@ export default function ClubsPage() {
               className="flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold text-white"
               style={{ backgroundColor: "rgba(255,255,255,0.15)" }}>
               <Plus size={14} />
-              Create club
+              Create
             </Link>
             {isSuperAdmin && pendingCount > 0 && (
               <Link href="/clubs/pending"
@@ -252,7 +252,7 @@ function JoinedView({ joinedClubs, exploreClubs, userId, nextMeetingFor, latestA
               See all clubs →
             </button>
           </div>
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 md:grid-cols-4">
             {exploreClubs.slice(0, 4).map((club) => {
               const next = nextMeetingFor(club.id);
               return (
@@ -288,7 +288,7 @@ function ExploreView({ clubs, userId, nextMeetingFor, onJoin }: {
           onChange={(e) => setSearch(e.target.value)}
         />
       </div>
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 md:grid-cols-4">
         {filtered.map((club) => (
           <DiscoverTile key={club.id} club={club} nextMeeting={nextMeetingFor(club.id)} onJoin={() => onJoin(club.id)} />
         ))}
